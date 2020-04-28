@@ -1,0 +1,245 @@
+/**
+ *  Arithmetic Operators
+ *  Author: GAMA Automatic Generator
+ *  Description: Unit tests of operators belonging to "Arithmetic Operators".
+ */
+
+experiment "Run Tests" type: test {	
+
+	
+		test "abs" {
+			float var0 <- abs (200 * -1 + 0.5); 	// var0 equals 199.5
+			assert var0 = 199.5; 
+			int var1 <- abs (-10); 	// var1 equals 10
+			assert var1 = 10; 
+			int var2 <- abs (10); 	// var2 equals 10
+			assert var2 = 10; 
+			int var3 <- abs (-0); 	// var3 equals 0
+			assert var3 = 0; 
+
+		}
+	
+		test "acos" {
+			float var0 <- acos (0); 	// var0 equals 90.0
+			assert var0 = 90.0; 
+
+		}
+	
+		test "asin" {
+			float var0 <- asin (90); 	// var0 equals #nan
+			float var1 <- asin (0); 	// var1 equals 0.0
+			assert var1 = 0.0; 
+
+		}
+	
+		test "atan" {
+			float var0 <- atan (1); 	// var0 equals 45.0
+			assert var0 = 45.0; 
+
+		}
+	
+		test "atan2" {
+			float var0 <- atan2 (0,0); 	// var0 equals 0.0
+			assert var0 = 0.0; 
+
+		}
+	
+		test "ceil" {
+			float var0 <- ceil(3); 	// var0 equals 3.0
+			assert var0 = 3.0; 
+			float var1 <- ceil(3.5); 	// var1 equals 4.0
+			assert var1 = 4.0; 
+			float var2 <- ceil(-4.7); 	// var2 equals -4.0
+			assert var2 = -4.0; 
+
+		}
+	
+		test "cos" {
+			float var0 <- cos (0.0); 	// var0 equals 1.0
+			assert var0 = 1.0; 
+			float var1 <- cos(360.0); 	// var1 equals 1.0
+			assert var1 = 1.0; 
+			float var2 <- cos(-720.0); 	// var2 equals 1.0
+			assert var2 = 1.0; 
+			float var3 <- cos (0); 	// var3 equals 1.0
+			assert var3 = 1.0; 
+			float var4 <- cos(360); 	// var4 equals 1.0
+			assert var4 = 1.0; 
+			float var5 <- cos(-720); 	// var5 equals 1.0
+			assert var5 = 1.0; 
+
+		}
+	
+		test "cos_rad" {
+			float var0 <- cos_rad(0.0); 	// var0 equals 1.0
+			assert var0 = 1.0; 
+			float var1 <- cos_rad(#pi); 	// var1 equals -1.0
+			assert var1 = -1.0; 
+
+		}
+	
+		test "div" {
+			int var0 <- 40.1 div 4.5; 	// var0 equals 8
+			assert var0 = 8; 
+			int var1 <- 40.5 div 3; 	// var1 equals 13
+			assert var1 = 13; 
+			int var2 <- 40 div 4.1; 	// var2 equals 9
+			assert var2 = 9; 
+			int var3 <- 40 div 3; 	// var3 equals 13
+			assert var3 = 13; 
+
+		}
+	
+		test "even" {
+			bool var0 <- even (3); 	// var0 equals false
+			assert var0 = false; 
+			bool var1 <- even(-12); 	// var1 equals true
+			assert var1 = true; 
+
+		}
+	
+		test "exp" {
+			float var0 <- exp (0.0); 	// var0 equals 1.0
+			assert var0 = 1.0; 
+
+		}
+	
+		test "fact" {
+			float var0 <- fact(4); 	// var0 equals 24
+			assert var0 = 24; 
+
+		}
+	
+		test "floor" {
+			float var0 <- floor(3); 	// var0 equals 3.0
+			assert var0 = 3.0; 
+			float var1 <- floor(3.5); 	// var1 equals 3.0
+			assert var1 = 3.0; 
+			float var2 <- floor(-4.7); 	// var2 equals -5.0
+			assert var2 = -5.0; 
+
+		}
+	
+		test "hypot" {
+			float var0 <- hypot(0,1,0,1); 	// var0 equals sqrt(2)
+			assert var0 = sqrt(2); 
+
+		}
+	
+		test "is_finite" {
+			bool var0 <- is_finite(4.66); 	// var0 equals true
+			assert var0 = true; 
+			bool var1 <- is_finite(#infinity); 	// var1 equals false
+			assert var1 = false; 
+
+		}
+	
+		test "is_number" {
+			bool var0 <- is_number("test"); 	// var0 equals false
+			assert var0 = false; 
+			bool var1 <- is_number("123.56"); 	// var1 equals true
+			assert var1 = true; 
+			bool var2 <- is_number("-1.2e5"); 	// var2 equals true
+			assert var2 = true; 
+			bool var3 <- is_number("1,2"); 	// var3 equals false
+			assert var3 = false; 
+			bool var4 <- is_number("#12FA"); 	// var4 equals true
+			assert var4 = true; 
+			bool var5 <- is_number(4.66); 	// var5 equals true
+			assert var5 = true; 
+			bool var6 <- is_number(#infinity); 	// var6 equals true
+			assert var6 = true; 
+			bool var7 <- is_number(#nan); 	// var7 equals false
+			assert var7 = false; 
+
+		}
+	
+		test "ln" {
+			float var0 <- ln(exp(1)); 	// var0 equals 1.0
+			assert var0 = 1.0; 
+			float var1 <- ln(1); 	// var1 equals 0.0
+			assert var1 = 0.0; 
+
+		}
+	
+		test "log" {
+			float var0 <- log(10); 	// var0 equals 1.0
+			assert var0 = 1.0; 
+			float var1 <- log(1); 	// var1 equals 0.0
+			assert var1 = 0.0; 
+
+		}
+	
+		test "mod" {
+			int var0 <- 40 mod 3; 	// var0 equals 1
+			assert var0 = 1; 
+
+		}
+	
+		test "Power" {
+			float var0 <- 2 ^ 3; 	// var0 equals 8.0
+			assert var0 = 8.0; 
+			float var1 <- 4.84 ^ 0.5; 	// var1 equals 2.2
+			assert var1 = 2.2; 
+
+		}
+	
+		test "signum" {
+			int var0 <- signum(-12); 	// var0 equals -1
+			assert var0 = -1; 
+			int var1 <- signum(14); 	// var1 equals 1
+			assert var1 = 1; 
+			int var2 <- signum(0); 	// var2 equals 0
+			assert var2 = 0; 
+
+		}
+	
+		test "sin" {
+			float var0 <- sin(360) with_precision 10 with_precision 10; 	// var0 equals 0.0
+			assert var0 = 0.0; 
+			float var1 <- sin (0); 	// var1 equals 0.0
+			assert var1 = 0.0; 
+
+		}
+	
+		test "sin_rad" {
+			float var0 <- sin_rad(0); 	// var0 equals 0.0
+			assert var0 = 0.0; 
+			float var1 <- sin_rad(#pi/2); 	// var1 equals 1.0
+			assert var1 = 1.0; 
+
+		}
+	
+		test "sqrt" {
+			float var0 <- sqrt(4); 	// var0 equals 2.0
+			assert var0 = 2.0; 
+			float var1 <- sqrt(4); 	// var1 equals 2.0
+			assert var1 = 2.0; 
+
+		}
+	
+		test "tan" {
+			float var0 <- tan (0); 	// var0 equals 0.0
+			assert var0 = 0.0; 
+			float var1 <- tan(90); 	// var1 equals 1.633123935319537E16
+			assert var1 = 1.633123935319537E16; 
+
+		}
+	
+		test "tan_rad" {
+			float var0 <- tan_rad(0); 	// var0 equals 0.0
+			assert var0 = 0.0; 
+
+		}
+	
+		test "tanh" {
+			float var0 <- tanh(0); 	// var0 equals 0.0
+			assert var0 = 0.0; 
+			float var1 <- tanh(100); 	// var1 equals 1.0
+			assert var1 = 1.0; 
+
+		}
+	
+}
+
+	

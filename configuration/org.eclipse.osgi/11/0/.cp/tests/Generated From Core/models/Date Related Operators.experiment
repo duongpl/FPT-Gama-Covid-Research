@@ -1,0 +1,176 @@
+/**
+ *  Date Related Operators
+ *  Author: GAMA Automatic Generator
+ *  Description: Unit tests of operators belonging to "Date Related Operators".
+ */
+
+experiment "Run Tests" type: test {	
+
+	
+		test "between" {
+			bool var0 <- (date('2016-01-01') between(date('2000-01-01'), date('2020-02-02'))); 	// var0 equals true
+			assert var0 = true; 
+			//// will return true every new day between these two dates, taking the first one as the starting point
+			//every(#day between(date('2000-01-01'), date('2020-02-02'))) 
+			bool var3 <- (date('2016-01-01') between(date('2000-01-01'), date('2020-02-02'))); 	// var3 equals true
+			assert var3 = true; 
+			//// // will return true if the current_date of the model is in_between the 2
+			//between(date('2000-01-01'), date('2020-02-02'))
+			bool var6 <- between(5.0, 1.0, 10.0); 	// var6 equals true
+			assert var6 = true; 
+			bool var7 <- between(5, 1, 10); 	// var7 equals true
+			assert var7 = true; 
+
+		}
+	
+		test "Different" {
+			bool var0 <- 3.0 != 3.0; 	// var0 equals false
+			assert var0 = false; 
+			bool var1 <- 4.0 != 4.7; 	// var1 equals true
+			assert var1 = true; 
+			bool var2 <- 3 != 3.0; 	// var2 equals false
+			assert var2 = false; 
+			bool var3 <- 4 != 4.7; 	// var3 equals true
+			assert var3 = true; 
+			bool var4 <- 3.0 != 3; 	// var4 equals false
+			assert var4 = false; 
+			bool var5 <- 4.7 != 4; 	// var5 equals true
+			assert var5 = true; 
+			bool var6 <- [2,3] != [2,3]; 	// var6 equals false
+			assert var6 = false; 
+			bool var7 <- [2,4] != [2,3]; 	// var7 equals true
+			assert var7 = true; 
+			bool var8 <- #now != #now minus_hours 1; 	// var8 equals true
+			assert var8 = true; 
+
+		}
+	
+		test "Equals" {
+			bool var6 <- [2,3] = [2,3]; 	// var6 equals true
+			assert var6 = true; 
+			bool var0 <- 4.5 = 4.7; 	// var0 equals false
+			assert var0 = false; 
+			bool var1 <- 4.7 = 4; 	// var1 equals false
+			assert var1 = false; 
+			bool var2 <- 3 = 3.0; 	// var2 equals true
+			assert var2 = true; 
+			bool var3 <- 4 = 4.7; 	// var3 equals false
+			assert var3 = false; 
+			bool var4 <- #now = #now minus_hours 1; 	// var4 equals false
+			assert var4 = false; 
+			bool var5 <- 4 = 5; 	// var5 equals false
+			assert var5 = false; 
+
+		}
+	
+		test "milliseconds_between" {
+			float var0 <- milliseconds_between(date('2000-01-01'), date('2000-02-01')); 	// var0 equals 2.6784E9
+			assert var0 = 2.6784E9; 
+
+		}
+	
+		test "minus_days" {
+			date var0 <- date('2000-01-01') minus_days 20; 	// var0 equals date('1999-12-12')
+			assert var0 = date('1999-12-12'); 
+
+		}
+	
+		test "minus_hours" {
+			//// equivalent to date1 - 15 #h
+			date var1 <- date('2000-01-01') minus_hours 15 ; 	// var1 equals date('1999-12-31 09:00:00')
+			assert var1 = date('1999-12-31 09:00:00'); 
+
+		}
+	
+		test "minus_minutes" {
+			//// date('2000-01-01') to date1 - 5#mn
+			date var1 <- date('2000-01-01') minus_minutes 5 ; 	// var1 equals date('1999-12-31 23:55:00')
+			assert var1 = date('1999-12-31 23:55:00'); 
+
+		}
+	
+		test "minus_months" {
+			date var0 <- date('2000-01-01') minus_months 5; 	// var0 equals date('1999-08-01')
+			assert var0 = date('1999-08-01'); 
+
+		}
+	
+		test "minus_ms" {
+			//// equivalent to date1 - 15 #ms
+			date var1 <- date('2000-01-01') minus_ms 1000 ; 	// var1 equals date('1999-12-31 23:59:59')
+			assert var1 = date('1999-12-31 23:59:59'); 
+
+		}
+	
+		test "minus_weeks" {
+			date var0 <- date('2000-01-01') minus_weeks 15; 	// var0 equals date('1999-09-18')
+			assert var0 = date('1999-09-18'); 
+
+		}
+	
+		test "minus_years" {
+			date var0 <- date('2000-01-01') minus_years 3; 	// var0 equals date('1997-01-01')
+			assert var0 = date('1997-01-01'); 
+
+		}
+	
+		test "months_between" {
+			int var0 <- months_between(date('2000-01-01'), date('2000-02-01')); 	// var0 equals 1
+			assert var0 = 1; 
+
+		}
+	
+		test "plus_days" {
+			date var0 <- date('2000-01-01') plus_days 12; 	// var0 equals date('2000-01-13')
+			assert var0 = date('2000-01-13'); 
+
+		}
+	
+		test "plus_hours" {
+			// equivalent to date1 + 15 #h
+			date var1 <- date('2000-01-01') plus_hours 24; 	// var1 equals date('2000-01-02')
+			assert var1 = date('2000-01-02'); 
+
+		}
+	
+		test "plus_minutes" {
+			// equivalent to date1 + 5 #mn
+			date var1 <- date('2000-01-01') plus_minutes 5 ; 	// var1 equals date('2000-01-01 00:05:00')
+			assert var1 = date('2000-01-01 00:05:00'); 
+
+		}
+	
+		test "plus_months" {
+			date var0 <- date('2000-01-01') plus_months 5; 	// var0 equals date('2000-06-01')
+			assert var0 = date('2000-06-01'); 
+
+		}
+	
+		test "plus_ms" {
+			//// equivalent to date('2000-01-01') + 15 #ms
+			date var1 <- date('2000-01-01') plus_ms 1000 ; 	// var1 equals date('2000-01-01 00:00:01')
+			assert var1 = date('2000-01-01 00:00:01'); 
+
+		}
+	
+		test "plus_weeks" {
+			date var0 <- date('2000-01-01') plus_weeks 15; 	// var0 equals date('2000-04-15')
+			assert var0 = date('2000-04-15'); 
+
+		}
+	
+		test "plus_years" {
+			date var0 <- date('2000-01-01') plus_years 15; 	// var0 equals date('2015-01-01')
+			assert var0 = date('2015-01-01'); 
+
+		}
+	
+		test "years_between" {
+			int var0 <- years_between(date('2000-01-01'), date('2010-01-01')); 	// var0 equals 10
+			assert var0 = 10; 
+
+		}
+	
+}
+
+	

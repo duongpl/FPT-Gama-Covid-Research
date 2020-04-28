@@ -1,0 +1,17 @@
+/**
+ *  Material
+ *  Author: GAMA Automatic Generator
+ *  Description: Unit tests of operators belonging to "Material".
+ */
+
+experiment "Run Tests" type: test {	
+
+	
+		test "material" {
+			
+
+		}
+	
+}
+
+	
