@@ -1,0 +1,1268 @@
+experiment "Tests for msi.gama.core" type: test {
+
+	test "Operator /" {
+		assert {2,5} / 4 = {0.5,1.25};
+		assert is_error({2,5} / 0);
+	}
+
+	test "Operator *" {
+		assert {2,5} * 4.0 = {8.0,20.0};
+		assert {2,5} * 0.0 = {0.0,0.0};
+	}
+
+	test "Operator +" {
+		assert {1, 2} + {4, 5} = {5,7};
+		point p <- {1, 2};
+		assert  p + {0, 0} = p warning: true;
+	}
+
+	test "Regular and Not" {
+		assert norm({3,4}) = 5.0;
+		assert norm({1,1}) = sqrt(2);
+		assert norm({0,0}) = 0.0;
+		assert norm({1,0}) = norm({0,1});
+	}
+
+	test "Operator * (1)" {
+		assert {2,5} * 4 = {8,20};
+		assert {2,5} * 0 = {0,0};
+	}
+
+	test "Operator round" {
+		assert {12345.78943,  12345.78943, 12345.78943} with_precision 2 = {12345.79,12345.79,12345.79};
+	}
+
+	test "Operator -" {
+		assert {2.0,3.0,4.0} - 1 = {1.0,2.0,3.0};
+	}
+
+	test "Operator / (5)" {
+		assert {5, 7.5} / 2.5 = {2,3};
+	}
+
+	test "Operator * (4)" {
+		assert {2,5} * {4.5, 5} = 34.0;
+	}
+
+
+	test "Operator * (2)" {
+		assert 2 * 2.0 = 4.0;
+		assert 1 * (- 1.0) = -1.0;
+		assert 1 * 0.0 = 0.0;
+	}
+
+	test "Operator / (1)" {
+		assert 1/0.5=2.0;
+		assert is_error(2/0.0);
+		assert 0/0.3=0.0;
+	}
+
+	test "Operator tanh" {
+		assert tanh(100) = 1.0;
+		assert tanh(0) = 0.0;
+	}
+
+	test "Operator atan" {
+		assert atan(0.0) = 0.0;
+		assert atan(-1.0) = -45.0;
+		assert atan(1.0) = 45.0;
+	}
+
+	test "Operator acos" {
+		assert acos(0.0) = 90.0;
+		assert acos(-1.0) = 180.0;
+		assert acos(1.0) = 0.0;
+		assert not(is_number(acos(-10.0)));
+		assert not(is_number(acos(10.0)));
+	}
+
+	test "Operator ^" {
+		assert 2^0.5 = sqrt(2);
+		assert 2^0.0 = 1.0;
+		assert 2^1.0 = 2.0;
+	}
+
+	test "Operator atan (1)" {
+		assert atan(0) = 0.0;
+		assert atan(-1) = -45.0;
+		assert atan(1) = 45.0;
+	}
+
+	test "Operator asin" {
+		assert asin(0) = 0.0;
+		assert asin(-1) = -90.0;
+		assert asin(1) = 90.0;
+		assert not(is_number(asin(-10)));
+		assert not(is_number(asin(10)));
+	}
+
+	test "Operator acos (1)" {
+		assert acos(0) = 90.0;
+		assert acos(-1) = 180.0;
+		assert acos(1) = 0.0;
+		assert not(is_number(acos(-10)));
+		assert not(is_number(acos(10)));
+	}
+
+	test "Operator abs" {
+		assert abs(1) = 1;
+		assert abs(-2) = 2;
+		assert abs(0) = 0;
+		assert abs(-0) = 0;
+	}
+
+	test "Operator / (2)" {
+		assert 0.2/2=0.1;
+		assert is_error(1.5/0);
+		assert 0.0/5=0.0;
+	}
+
+	test "Operator ^ (1)" {
+		assert 8^0 = 1.0;
+		assert 2^2 = 4.0;
+	}
+
+	test "Operator ^ (2)" {
+		assert 4.0^2 = 16.0;
+		assert 8.0^0 = 1.0;
+		assert 8.0^1 = 8.0;
+	}
+
+	test "Operator asin (1)" {
+		assert asin(0.0) = 0.0;
+		assert asin(-1.0) = -90.0;
+		assert asin(1.0) = 90.0;
+		assert not(is_number(asin(-10.0)));
+		assert not(is_number(asin(10.0)));
+	}
+
+	test "Operator * (3)" {
+		assert 2.0 * 2.0 = 4.0;
+		assert 1.5 * (- 1.0) = -1.5;
+		assert 1.5 * 0.0 = 0.0;
+	}
+
+	test "Operator / (3)" {
+		assert 0/1=0;
+		assert is_error(1/0);
+		assert 3/5=0.6;
+	}
+
+	test "Operator / (4)" {
+		assert 0.2/0.5=0.4;
+		assert is_error(1.5/0.0);
+		assert 0.0/1.0=0.0;
+	}
+
+	test "Operator tan" {
+		assert tan(90.0) = 1.633123935319537E16;
+		assert tan(0.0) = 0.0;
+	}
+
+	test "Operator + (1)" {
+		assert 1 + (- 1.0) = 0.0;
+		assert 1 + 1.0 = 2.0;
+	}
+
+	test "Operator + (2)" {
+		assert 1.0 + (- 1.0) = 0.0;
+		assert 1.0 + 1.0 = 2.0;
+	}
+
+	test "Operator abs (1)" {
+		assert abs(1.7) = 1.7;
+		assert abs(-2.0) = 2.0;
+		assert abs(0.0) = 0.0;
+		assert abs(-0.0) = 0.0;
+	}
+
+	test "Operator round (1)" {
+		assert round (100) = 100;
+	}
+
+	test "Operator exp" {
+		assert exp (0) = 1.0;
+	}
+
+	test "Operator - (1)" {
+		assert -(-90.0) = 90.0;
+	}
+
+	test "Operator ^ (3)" {
+		assert 16.81^0.5 = sqrt(16.81);
+	}
+
+	test "Operator + (5)" {
+		assert 1.0 + matrix([[5.5,8.5],[6.5,7.5]]) = matrix([[6.5,9.5],[7.5,8.5]]);
+	}
+
+	test "Operator * (5)" {
+		assert 2.0 * matrix([[2,5],[3,4]]) =  matrix([[4.0,10.0],[6.0,8.0]]);
+	}
+
+
+	test "Operator + (3)" {
+		assert 'a'+'b'='ab';
+		assert ''+'' = '';
+		string a <- 'a';
+		assert  a + '' = a;
+	}
+
+
+	test "Operator + (4)" {
+		assert (circle(5) + 5).height with_precision 1 = 20.0;
+		assert (circle(5) + 5).location with_precision 9 = (circle(10)).location with_precision 9;
+	}
+
+	test "Operator inverse_rotation" {
+		assert inverse_rotation(38.0::{1,1,1}) = (-38.0::{1,1,1});
+	}
+
+	test "Operator intersects" {
+		assert square(5) intersects square(2);
+	}
+
+	test "Operator + (6)" {
+		assert (circle(5) + (5,32,#round)).height with_precision 5 = 20.0;
+	}
+
+	test "Operator square" {
+		assert square(10).area = 100;
+	}
+
+	test "Operator skeletonize" {
+		assert // applies only to a square 
+ length(skeletonize(square(5))) = 1;
+	}
+
+	test "Operator split_lines" {
+		assert split_lines([line([{0,10}, {20,10}]), line([{10,0}, {10,20}])]) = [line([{0,10}, {10,10}]), line([{10,10}, {20,10}]), line([{10,0}, {10,10}]) , line([{10,10}, {10,20}])];
+	}
+
+	test "Operator * (6)" {
+		geometry g <- cube (2);
+		float v1 <- g.area * g.height;
+		 g <- g * {5, 5, 5};
+		float v2 <- g.area * g.height;
+		assert   v1 < v2;
+	}
+
+	test "Operator IDW" {
+		map<point, float> mapLocationPoints <- [{0,0}::10.0,{0,10}::-3.0];
+		
+		list<point> queryPoint <- [{0,5}];
+		assert 
+		float((IDW(list(geometry(queryPoint)),mapLocationPoints,1)).pairs[0].value) with_precision 1 = 3.5;
+	}
+
+	test "Operator normalized_rotation" {
+		assert normalized_rotation(-38::{1,1,1})=(38.0::{-0.5773502691896258,-0.5773502691896258,-0.5773502691896258});
+	}
+
+	test "Operator points_along" {
+		assert line({0,0},{0,10}) points_along [0.50, 0.75] = [{0.0,5.0,0.0},{0.0,7.5,0.0}];
+	}
+
+	test "Operator set_z" {
+		list zzz <- (triangle(3) set_z [5,10,14]).points collect each.z;
+		assert  zzz[1] = 10;
+	}
+
+	test "Operator crosses" {
+		assert polyline([{10,10},{20,20}]) crosses polyline([{10,20},{20,10}]);
+	}
+
+	test "Operator direction_between" {
+		assert topology(world) direction_between([{0,0},{50,50}]) = 45.0;
+	}
+
+	test "Operator scaled_to" {
+		geometry g <- cube (2);
+		float v1 <- g.area * g.height;
+		 g <- g scaled_to {20,20};
+		float v2 <- g.area * g.height;
+		assert   v1 < v2;
+	}
+
+	test "Operator + (7)" {
+		assert (circle(5) + (5,32)).height with_precision 5 = 20.0;
+	}
+
+	test "Operator touches" {
+		assert polygon([{10,10},{10,20},{20,20},{20,10}]) touches polygon([{10,20},{20,20},{20,30},{10,30}]);
+	}
+
+	test "Operator rotated_by" {
+		assert (( square(5) rotated_by 45).width with_precision 2 = 7.07);
+	}
+
+	test "Operator distance_to" {
+		assert {20,20} distance_to {30,30} = 14.142135623730951;
+	}
+
+	test "Operator box" {
+		assert box(10,5,5).volume = 250;
+	}
+
+	test "Operator centroid" {
+		assert centroid(world) = {50.0, 50.0, 0.0};
+	}
+
+	test "Operator covers" {
+		assert square(5) covers square(2);
+	}
+
+	test "Operator cube" {
+		assert cube(10).volume = 1000;
+	}
+
+	test "Operator set_z (1)" {
+		assert set_z (triangle(3), 1, 3.0).points[1].z = 3.0;
+	}
+
+	test "Operator points_on" {
+		assert line({0,0},{0,10}) points_on 5 = [{0.0,0.0,0.0},{0.0,5.0,0.0},{0.0,10.0,0.0}];
+	}
+
+	test "Operator - (2)" {
+		assert (square(20) - 5).area = 100.0;
+	}
+
+	test "Operator line" {
+		assert points_along(line({0,0},{0,10}),[0.5])[0] = point({0,5});
+	}
+
+	test "Operator rotation_composition" {
+		assert normalized_rotation(rotation_composition(38.0::{1,1,1},90.0::{1,0,0}))=normalized_rotation(115.22128507898108::{0.9491582126366207,0.31479943993669307,-0.0});
+	}
+
+
+	test "Operator is_warning" {
+		assert is_warning("one" = 1) = false;
+	}
+
+	test "Operator dead" {
+		assert dead(simulation) = false;
+	}
+
+	test "Operator is_error" {
+		assert is_error("one" = 1) = false;
+	}
+
+
+	test "Operator gini" {
+		assert (gini([1.0, 0.5, 2.0]) with_precision 4) = 0.2857;
+	}
+
+	test "Operator predict" {
+		assert predict(build(matrix([[1.0,2.0,3.0,4.0],[2.0,3.0,4.0,2.0]])),[1,2,3,2] ) = 2.1818181818181817;
+	}
+
+	test "Operator build" {
+		assert build(matrix([[1.0,2.0,3.0,4.0],[2.0,3.0,4.0,2.0],[5.0,1.0,3.0,5.0],[3.0,4.0,5.0,1.0]])).parameters collect (each with_precision 5) = [0.5,2.5,0.0,-1.5];
+	}
+
+
+	test "Operator between" {
+		assert 0 between(-2,4) = true;
+		assert -12 between(-22,-10);
+		assert not(1 between(1,4));
+		assert not(2 between(4,1));
+	}
+
+	test "Operator >" {
+		bool val <- (3 > 17);
+		assert  val = false;
+		val <- (13 > 7);
+		assert  val = true;
+	}
+
+	test "Operator between (1)" {
+		assert 0.0 between(-2,4);
+		assert -12.5 between(-22.0,-10.0);
+		assert not(1.0 between(1.0,4.0));
+		assert not(2.2 between(4.0,1.9));
+	}
+
+
+	test "Operator reverse" {
+		map<int,int> m2 <- [1::111,2::222, 3::333, 4::444];
+		assert  reverse(m2) = map([111::1,222::2,333::3,444::4]);
+	}
+
+
+	test "Operator out_degree_of" {
+		graph<geometry, geometry> g1 <- directed(as_edge_graph([ edge({10,5}, {30,30}), edge({30,30}, {80,35}), node ({30,30})]));
+		assert 
+g1 out_degree_of {30,30} = 1;
+		graph<geometry, geometry> g2 <- directed(as_edge_graph([ edge({30,30}, {10,5}), edge({30,30}, {80,35}), node ({30,30})]));
+		assert 
+g2 out_degree_of {30,30} = 2;
+	}
+
+	test "Operator add_node" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		
+g <- g add_node {10,40} ;
+		assert  length(g.vertices) = 7;
+	}
+
+	test "Operator in_edges_of" {
+		graph<geometry, geometry> g2 <- directed(as_edge_graph([ edge({10,5}, {30,30}), edge({30,30}, {80,35}), node ({30,30})]));
+		assert 
+first(link({10,5},{30,30})) = first(g2 in_edges_of {30,30});
+	}
+
+	test "Operator contains_edge" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+(g contains_edge ({10,5}::{20,3})) = true;
+	}
+
+	test "Operator as_edge_graph" {
+		graph<geometry,geometry> comp <- as_edge_graph([line([{1,5},{12,45}]),line([{12,45},{34,56}])]);
+		assert   ( ({1,5} in comp.vertices) and  ({12,45} in comp.vertices) and  ({34,56} in comp.vertices) );
+	}
+
+	test "Operator neighbors_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+g neighbors_of ({10,5}) = [{80.0,35.0,0.0},{20.0,3.0,0.0},{30.0,30.0,0.0}];
+	}
+
+	test "Operator degree_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ (g degree_of ({10,5})) = 3;
+	}
+
+	test "Operator in_degree_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+(g in_degree_of ({20,3})) = 1;
+	}
+
+	test "Operator path_between" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ length((path_between (g, {10,5}, {50,50}))) = 1;
+	}
+
+	test "Operator add_edge" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		
+g <- g add_edge ({40,60}::{50,50});
+		assert   length(g.edges) = 6;
+	}
+
+	test "Operator betweenness_centrality" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ betweenness_centrality(g) = [{10.0,5.0,0.0}::5,{20.0,3.0,0.0}::0,{30.0,30.0,0.0}::2,{80.0,35.0,0.0}::4,{40.0,60.0,0.0}::0,{50.0,50.0,0.0}::0];
+	}
+
+	test "Operator remove_node_from" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		
+g <- geometry({10,5}) remove_node_from g;
+		assert   length(g.vertices) = 5 and length(g.edges) = 2;
+	}
+
+	test "Operator as_edge_graph (1)" {
+		graph<geometry,geometry> g <- as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+		assert   length(g.vertices) = 3 and length(g.edges) = 2;
+	}
+
+	test "Operator paths_between" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([
+								edge({10,5}, {20,3}), 
+								edge({10,5}, {30,30}),
+								edge({30,30}, {80,35}),
+								edge({80,35}, {40,60}),
+								edge({80,35}, {10,5}), 
+								edge({10,5}, {80,35}),
+								edge({30,30}, {85,25}),
+								edge({85,35}, {80,35}),
+								node ({50,50})
+	]));
+		assert   length((paths_between(g, {10,5}:: {80,35}, 2))) = 2;
+	}
+
+	test "Operator nb_cycles" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ nb_cycles(g) = 1;
+	}
+
+	test "Operator gamma_index" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ gamma_index(g) = 0.7142857142857143;
+	}
+
+	test "Operator connectivity_index" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ connectivity_index(g) = 0.8;
+	}
+
+	test "Operator connected_components_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		
+ list comp <- connected_components_of(g, true);
+		assert   length(comp) = 2;
+	}
+
+	test "Operator alpha_index" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ alpha_index(g) = 0.14285714285714285;
+	}
+
+	test "Operator beta_index" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ beta_index(g) = 0.8333333333333334;
+	}
+
+	test "Operator predecessors_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+g predecessors_of ({10,5}) = [{80.0,35.0,0.0}];
+	}
+
+	test "Operator biggest_cliques_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ biggest_cliques_of(g) = [[{10.0,5.0,0.0},{20.0,3.0,0.0}],[{30.0,30.0,0.0},{10.0,5.0,0.0}],[{30.0,30.0,0.0},{80.0,35.0,0.0}],[{40.0,60.0,0.0},{80.0,35.0,0.0}]];
+	}
+
+	test "Operator successors_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+g successors_of ({10,5}) = [{20.0,3.0,0.0},{30.0,30.0,0.0}];
+	}
+
+	test "Operator as_edge_graph (2)" {
+		graph<geometry,geometry> g <- as_edge_graph([line([{1,5},{12,45}]),line([{13,45},{34,56}])],1);
+		assert   [{1.0,5.0,0.0},{12.0,45.0,0.0},{34.0,56.0,0.0}] = g.vertices;
+	}
+
+	test "Operator main_connected_component" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ length(main_connected_component(g)) = 5;
+	}
+
+	test "Operator edge_between" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+(g edge_between ({10,5}::{20,3})) = g.edges[0];
+	}
+
+	test "Operator maximal_cliques_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		assert 
+ maximal_cliques_of(g) = [[{10.0,5.0,0.0},{20.0,3.0,0.0}],[{30.0,30.0,0.0},{10.0,5.0,0.0}],[{20.0,3.0,0.0}],[{30.0,30.0,0.0},{80.0,35.0,0.0}],[{40.0,60.0,0.0},{80.0,35.0,0.0}],[{40.0,60.0,0.0}],[{50.0,50.0,0.0}]];
+	}
+
+	test "Operator connected_components_of (1)" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		
+ list comp <- connected_components_of(g);
+		assert   length(comp) = 2;
+	}
+
+	test "Operator out_edges_of" {
+		graph<geometry, geometry> g <- directed(as_edge_graph([edge({10,5}, {20,3}), edge({10,5}, {30,30}),edge({30,30}, {80,35}),edge({80,35}, {40,60}),edge({80,35}, {10,5}), node ({50,50})]));
+		
+ list li <- g out_edges_of {10,5};
+		assert   length(li) = 2;
+	}
+
+
+	test "Operator sample" {
+		assert sample("result: ",'a' in ['a', 'b']) = "result: -: true";
+	}
+
+	test "Operator sample (1)" {
+		assert sample('a' in ['a', 'b']) = "'a' in (['a','b']) -: true";
+	}
+
+
+	test "Operator as_matrix" {
+		assert as_matrix('a', {2,3}) = matrix(['a','a','a'],['a','a','a']);
+		assert as_matrix(1.0, {2,2}) = matrix([1.0,1.0],[1.0,1.0]);
+	}
+
+	test "Operator matrix_with" {
+		assert {2,2} matrix_with (1) = matrix([1,1],[1,1]);
+	}
+
+	test "Operator species" {
+		assert species([1,5,9,3]) = nil;
+	}
+
+	test "Operator is_skill" {
+		assert simulation is_skill 'moving' = false;
+	}
+
+	test "Operator list_with" {
+		assert list_with(5,2) = [2,2,2,2,2];
+	}
+
+
+	test "Operator contains" {
+		assert ['aa'::'bb', 13::14] contains 'bb';
+	}
+
+	test "Operator contains_key" {
+		assert ['aa'::'bb', 13::14] contains_key 'aa';
+	}
+
+
+	test "Operator open_simplex_generator" {
+		seed <- 1.0;
+		assert  open_simplex_generator(2,3,253) = -0.053513655103822125;
+	}
+
+	test "Operator skew_gauss" {
+		seed <- 1.0;
+		assert  skew_gauss(0.0, 1.0, 0.7,0.1) = 0.7425668006838585;
+	}
+
+	test "Operator sample (2)" {
+		seed <- 1.0;
+		 list l1 <- sample([2,10,1],2,false);
+		
+		list l2 <-  [1,10];
+		assert l1 = l2;
+	}
+
+	test "Operator rnd" {
+		seed <- 1.0;
+		assert  rnd(1,5) = 4;
+	}
+
+	test "Operator rnd (1)" {
+		seed <- 1.0;
+		assert  rnd(10) = 8;
+	}
+
+	test "Operator rnd (2)" {
+		seed <- 1.0;
+		assert  rnd (2, 12, 4) = 10;
+	}
+
+	test "Operator gauss" {
+		seed <- 1.0;
+		assert  gauss({0.5, 0.2}) = 0.6343093594589535;
+	}
+
+	test "Operator rnd (3)" {
+		seed <- 1.0;
+		assert  rnd (2.0, 4.0) = 3.548024306042759;
+	}
+
+	test "Operator gauss (1)" {
+		seed <- 1.0;
+		assert  gauss(0.5, 0.2) = 0.6343093594589535;
+	}
+
+	test "Operator rnd_choice" {
+		seed <- 1.0;
+		assert  rnd_choice([0.2,0.5,0.3]) = 2;
+	}
+
+	test "Operator flip" {
+		assert flip(0) = false and flip(1) = true;
+	}
+
+	test "Operator rnd (4)" {
+		seed <- 1.0;
+		assert  rnd (2.0, 4.0, 0.5) = 3.5;
+	}
+
+	test "Operator rnd (5)" {
+		seed <- 1.0;
+		assert  rnd(100) = 78;
+	}
+
+	test "Operator rnd (6)" {
+		seed <- 1.0;
+		assert  rnd ({2.0, 4.0}, {2.0, 5.0, 10.0}) = {2.0,4.785039740667429,5.087825199078746};
+	}
+
+	test "Operator truncated_gauss" {
+		seed <- 1.0;
+		assert  TGauss({0,0.3}) = 0.10073201959421514;
+	}
+
+	test "Operator rnd (7)" {
+		seed <- 1.0;
+		assert  rnd ({2.0, 4.0}, {2.0, 5.0, 10.0},1) = {2.0,5.0,5.0};
+	}
+
+	test "Operator shuffle" {
+		seed <- 1.0;
+		assert  shuffle ([12, 13, 14]) = [12,13,14];
+	}
+
+	test "Operator sample (3)" {
+		seed <- 1.0;
+		
+		list l1 <- sample([2,10,1],2,false,[0.1,0.7,0.2]);
+		
+		list l2 <-  [10,1];
+		assert 
+		l1 = l2;
+	}
+
+	test "Operator rnd (8)" {
+		seed <- 1.0;
+		assert  rnd ({2.5,3, 1.0}) = {1.935030382553449,2.3551192220022856,0.5087825199078746};
+	}
+
+	test "Operator binomial" {
+		seed <- 1.0;
+		assert  binomial(15,0.6) = 9;
+	}
+
+	test "Operator shuffle (1)" {
+		seed <- 1.0;
+		assert  shuffle (matrix([["c11","c12","c13"],["c21","c22","c23"]])) = matrix([["c13","c21","c22"],["c11","c23","c12"]]);
+	}
+
+	test "Operator poisson" {
+		seed <- 1.0;
+		assert  poisson(3.5) = 6;
+	}
+
+	test "Operator shuffle (2)" {
+		seed <- 1.0;
+		assert  shuffle ('abc') = 'abc';
+	}
+
+	test "Operator simplex_generator" {
+		assert simplex_generator(2,3,253) = 0.0976676931220678;
+	}
+
+	test "Operator truncated_gauss (1)" {
+		seed <- 1.0;
+		assert  truncated_gauss ([0.5, 0.2]) = 0.5671546797294768;
+	}
+
+
+	test "Operator rnd_color" {
+		seed <- 1.0;
+		assert  int(rnd_color(255)) = -3749758;
+	}
+
+	test "Operator rgb" {
+		assert rgb (255,0,0) = #red;
+	}
+
+	test "Operator hsb" {
+		assert hsb (0.5,1.0,1.0,0.0) = rgb('cyan',0);
+	}
+
+	test "Operator rgb (1)" {
+		assert rgb ('red') = rgb(255,0,0);
+	}
+
+	test "Operator + (8)" {
+		assert rgb([255, 128, 32]) + rgb('red') = rgb([255,128,32]);
+	}
+
+	test "Operator blend" {
+		assert blend(#red, #blue, 0.3) = rgb(76,0,178);
+	}
+
+	test "Operator hsb (1)" {
+		assert hsb (0.0,1.0,1.0) = rgb('red');
+	}
+
+	test "Operator hsb (2)" {
+		assert int(hsb(200,40, 90)) = -526409;
+	}
+
+	test "Operator + (9)" {
+		assert rgb([255, 128, 32]) + 3 = rgb([255,131,35]);
+	}
+
+	test "Operator - (3)" {
+		assert rgb([255, 128, 32]) - rgb('red') = rgb([0,128,32]);
+	}
+
+	test "Operator * (7)" {
+		assert rgb([255, 128, 32]) * 2 = rgb([255,255,64]);
+	}
+
+	test "Operator / (6)" {
+		assert rgb([255, 128, 32]) / 2.5 = rgb([102,51,13]);
+	}
+
+	test "Operator rnd_color (1)" {
+		seed <- 1.0;
+		assert  int(rnd_color(100, 200)) = -5065833;
+	}
+
+	test "Operator rgb (2)" {
+		assert int(rgb(rgb(255,0,0),125)) = 2113863680;
+	}
+
+	test "Operator - (4)" {
+		assert rgb([255, 128, 32]) - 3 = rgb([252,125,29]);
+	}
+
+	test "Operator / (7)" {
+		assert rgb([255, 128, 32]) / 2 = rgb([127,64,16]);
+	}
+
+	test "Operator grayscale" {
+		assert int(grayscale (rgb(255,0,0))) = -11776948;
+	}
+
+	test "Operator rgb (3)" {
+		assert int(rgb(rgb(255,0,0),0.5)) = 2147418112;
+	}
+
+	test "Operator rgb (4)" {
+		assert rgb (255,0,0,125).alpha = 125;
+	}
+
+	test "Operator rgb (5)" {
+		assert int(rgb (255,0,0,0.5)) = 2147418112;
+	}
+
+	test "Operator blend (1)" {
+		assert blend(#red, #blue) = rgb(127,0,127);
+	}
+
+
+	test "Operator contains_all" {
+		assert [1,2,3,4,5,6] contains_all [2,8] = false;
+		assert [1::2, 3::4, 5::6] contains_all [1,3] = false;
+		assert [1::2, 3::4, 5::6] contains_all [2,4] = true;
+	}
+
+	test "Operator group_by" {
+		assert [1,2,3,4,5,6,7,8] group_by (each > 3) = [false::[1, 2, 3], true::[4, 5, 6, 7, 8]];
+		assert [1::2, 3::4, 5::6] group_by (each > 4) = [false::[2, 4], true::[6]];
+	}
+
+	test "Operator contains_any" {
+		assert [1,2,3,4,5,6] contains_any [2,4] = true;
+		assert [1,2,3,4,5,6] contains_any [2,8] = true;
+		assert [1::2, 3::4, 5::6] contains_any [2,4] = true;
+	}
+
+	test "Operator mean_of" {
+		assert [1,2] mean_of (each * 10 ) = 15;
+		assert [1,2] mean_of (each * 10 ) = 15;
+		assert [1,2] mean_of (each * 10 ) = 15;
+	}
+
+	test "Operator collect" {
+		assert [1,2,4] collect (each *2) = [2,4,8];
+		assert [1,2,4] collect ([2,4]) = [[2,4],[2,4],[2,4]];
+	}
+
+	test "Operator last" {
+		assert last(3, [1,2,3,4,5,6]) = [4,5,6];
+		assert last(0,[1,2,3,4,5,6]) = [];
+		assert last(10,[1::2, 3::4]) is list;
+	}
+
+	test "Operator sum" {
+		assert sum([{1.0,3.0},{3.0,5.0},{9.0,1.0},{7.0,8.0}]) = {20.0,17.0};
+		assert sum ([12,10,3]) = 25;
+	}
+
+	test "Operator first" {
+		assert first(3, [1,2,3,4,5,6]) = [1,2,3];
+		assert first(0,[1,2,3,4,5,6]) = [];
+		assert first_of(3, [1,2,3,4,5,6]) = [1,2,3];
+		assert first_of(0,[1,2,3,4,5,6]) = [];
+	}
+
+	test "Operator in" {
+		assert 2 in [1,2,3,4,5,6] = true;
+		assert 3 in [1::2, 3::4, 5::6] = false;
+	}
+
+	test "Operator mean" {
+		assert mean ([4.5, 3.5, 5.5, 7.0]) with_precision 3 = 5.125;
+	}
+
+	test "Operator sort_by" {
+		assert [1,2,4,3,5,7,6,8] sort_by (each) = [1,2,3,4,5,6,7,8];
+	}
+
+	test "Operator ::" {
+		assert string(1::2) = '1::2';
+	}
+
+	test "Operator variance_of" {
+		assert [1,2,3,4,5,6] variance_of each with_precision 2 = 2.92;
+	}
+
+	test "Operator first_with" {
+		assert [1,2,3,4,5,6,7,8] first_with (each > 3) = 4;
+	}
+
+	test "Operator + (10)" {
+		assert [1,2,3,4,5,6] + 2 = [1,2,3,4,5,6,2];
+	}
+
+	test "Operator sum (1)" {
+		assert sum(as_edge_graph(line([{10,10},{30,10}]))) = 20.0;
+	}
+
+	test "Operator with_min_of" {
+		assert [1,2,3,4,5,6,7,8] with_min_of (each )  = 1;
+	}
+
+	test "Operator index_of" {
+		assert [1,2,3,1,2,1,4,5] index_of 4 = 6;
+	}
+
+	test "Operator last_index_of" {
+		assert last_index_of([1,2,2,2,5], 2) = 3;
+	}
+
+	test "Operator inter" {
+		assert [1,2,3,4,5,6] inter [0,8] = [];
+	}
+
+	test "Operator index_of (1)" {
+		assert matrix([[1,2,3],[4,5,6]]) index_of 4 = {1.0,0.0};
+	}
+
+	test "Operator union" {
+		assert [1,2,3,4,5,6] union [2,4,9] = [1,2,3,4,5,6,9];
+	}
+
+	test "Operator copy_between" {
+		assert copy_between ([4, 1, 6, 9 ,7], 1, 3) = [1,6];
+	}
+
+	test "Operator + (11)" {
+		assert [1,2,3,4,5,6] + [2,4,9] = [1,2,3,4,5,6,2,4,9];
+	}
+
+	test "Operator - (5)" {
+		assert [1,2,3,4,5,6] - [0,8] = [1,2,3,4,5,6];
+	}
+
+	test "Operator where" {
+		assert [1,2,3,4,5,6,7,8] where (each > 3) = [4, 5, 6, 7, 8];
+	}
+
+	test "Operator range" {
+		assert range(0,2) = [0,1,2];
+	}
+
+	test "Operator range (1)" {
+		assert range(0,6,2) = [0,2,4,6];
+	}
+
+	test "Operator accumulate" {
+		assert [1,2,4] accumulate ([2,4]) = [2,4,2,4,2,4];
+	}
+
+	test "Operator product_of" {
+		assert [3,4] product_of (each *2) = 48;
+	}
+
+	test "Operator last_with" {
+		assert [1,2,3,4,5,6,7,8] last_with (each > 3) = 8;
+	}
+
+	test "Operator every" {
+		assert [1,2,3,4,5] every 2 = [1,3,5];
+	}
+
+	test "Operator distinct" {
+		assert remove_duplicates([3,2,5,1,2,3,5,5,5]) = [3,2,5,1];
+	}
+
+	test "Operator - (6)" {
+		assert [1,2,3,4,5,6] - 0 = [1,2,3,4,5,6];
+	}
+
+	test "Operator - (7)" {
+		assert ([1,2,2,3,5] - 3) = [1,2,2,5];
+	}
+
+	test "Operator sum_of" {
+		assert [1,2] sum_of (each * 100 ) = 300;
+	}
+
+	test "Operator with_max_of" {
+		assert [1,2,3,4,5,6,7,8] with_max_of (each ) = 8;
+	}
+
+	test "Operator index_of (2)" {
+		assert [1::2, 3::4, 5::6] index_of 4 = 3;
+	}
+
+	test "Operator range (2)" {
+		assert range(2) = [0,1,2];
+	}
+
+	test "Operator max_of" {
+		assert [1,2,4,3,5,7,6,8] max_of (each * 100 ) = 800;
+	}
+
+	test "Operator last_index_of (1)" {
+		assert [4,2,3,4,5,4] last_index_of 4 = 5;
+	}
+
+	test "Operator last_index_of (2)" {
+		assert matrix([[1,2,3],[4,5,4]]) last_index_of 4 = {1.0,2.0};
+	}
+
+	test "Operator min_of" {
+		assert [1,2,4,3,5,7,6,8] min_of (each * 100 ) = 100;
+	}
+
+	test "Operator last_index_of (3)" {
+		assert [1::2, 3::4, 5::4] last_index_of 4 = 5;
+	}
+
+
+	test "Operator string" {
+		assert string(date('2000-01-02'),'yyyy-MM-dd') = '2000-01-02';
+		assert string(date('2000-01-31'),'yyyy-MM-dd') = '2000-01-31';
+		assert string(date('2000-01-02'),'yyyy-MM-dd') = '2000-01-02';
+	}
+
+	test "Operator until" {
+		starting_date <- date([2019,5,9]);
+		assert until(date([2019,5,10])) = true;
+		starting_date <- date([2019,5,9]);
+		assert until(date([2019,5,9])) = true;
+		starting_date <- date([2019,5,9]);
+		assert until(date([2019,5,8])) = false;
+	}
+
+	test "Operator after" {
+		starting_date <- date([2019,5,9]);
+		assert after(date([2019,5,10])) = false;
+		starting_date <- date([2019,5,9]);
+		assert after(date([2019,5,9])) = false;
+		starting_date <- date([2019,5,9]);
+		assert after(date([2019,5,8])) = true;
+	}
+
+	test "Operator since" {
+		starting_date <- date([2019,5,9]);
+		assert since(date([2019,5,10])) = false;
+		starting_date <- date([2019,5,9]);
+		assert since(date([2019,5,9])) = true;
+		starting_date <- date([2019,5,9]);
+		assert since(date([2019,5,8])) = true;
+	}
+
+	test "Operator before" {
+		starting_date <- date([2019,5,9]);
+		assert before(date([2019,5,10])) = true;
+		starting_date <- date([2019,5,9]);
+		assert before(date([2019,5,9])) = false;
+		starting_date <- date([2019,5,9]);
+		assert before(date([2019,5,8])) = false;
+	}
+
+	test "Operator >=" {
+		assert (#now >= (#now minus_hours 1)) = true;
+	}
+
+	test "Operator plus_years" {
+		assert date('2000-01-01') plus_years 15 = date('2015-01-01');
+	}
+
+	test "Operator minus_days" {
+		assert date('2000-01-01') minus_days 20 = date('1999-12-12');
+	}
+
+	test "Operator to" {
+		assert list((date('2001-01-01') to date('2001-4-01')) every(#month)) collect each =
+		[date ('2001-01-01 00:00:00'),date ('2001-01-31 00:00:00'),date ('2001-03-02 00:00:00')];
+	}
+
+	test "Operator minus_hours" {
+		assert (date('2000-01-01') minus_hours 15)  = date('1999-12-31 09:00:00');
+	}
+
+	test "Operator plus_minutes" {
+		assert date('2000-01-01') plus_minutes 5  = date('2000-01-01 00:05:00');
+	}
+
+	test "Operator + (12)" {
+		assert date('2000-01-01 00:00:00') + '_Test' = '2000-01-01 00:00:00_Test';
+	}
+
+	test "Operator plus_ms" {
+		assert date('2000-01-01') plus_ms 1000  = date('2000-01-01 00:00:01');
+	}
+
+	test "Operator months_between" {
+		assert months_between(date('2000-01-01'), date('2000-02-01')) = 1;
+	}
+
+	test "Operator - (8)" {
+		assert date('2000-01-01') - 86400 = date('1999-12-31');
+	}
+
+	test "Operator minus_years" {
+		assert date('2000-01-01') minus_years 3 = date('1997-01-01');
+	}
+
+	test "Operator <" {
+		assert (#now < (#now minus_hours 1)) = false;
+	}
+
+	test "Operator milliseconds_between" {
+		assert milliseconds_between(date('2000-01-01'), date('2000-02-01')) = 2.6784E9;
+	}
+
+	test "Operator - (9)" {
+		assert date('2000-01-02') - date('2000-01-01') = 86400;
+	}
+
+	test "Operator plus_weeks" {
+		assert is_error(date('2000-15-01'));
+	}
+
+	test "Operator between (2)" {
+		starting_date <- date([2019,5,9]);
+		assert between((date([2019,5,8])), (date([2019,5,10]))) = true;
+	}
+
+	test "Operator + (13)" {
+		assert date('2016-01-01 00:00:01') + 86400 = date('2016-01-02 00:00:01');
+	}
+
+	test "Operator every (1)" {
+		assert list((date('2001-01-01') to date('2001-1-02')) every(#day)) collect each = [date ('2001-01-01 00:00:00')];
+	}
+
+	test "Operator <=" {
+		assert (#now <= (#now minus_hours 1)) = false;
+	}
+
+	test "Operator minus_ms" {
+		assert date('2000-01-01') minus_ms 1000  = date('1999-12-31 23:59:59');
+	}
+
+	test "Operator > (1)" {
+		assert (#now > (#now minus_hours 1)) = true;
+	}
+
+	test "Operator years_between" {
+		assert years_between(date('2000-01-01'), date('2010-01-01')) = 10;
+	}
+
+	test "Operator date" {
+		assert date('1999-01-30', 'yyyy-MM-dd', 'en') = date('1999-01-30 00:00:00');
+	}
+
+	test "Operator - (10)" {
+		assert date('2000-01-01') - 86400 = date('1999-12-31');
+	}
+
+	test "Operator string (1)" {
+		assert string(date('2000-01-02'),'yyyy-MMMM-dd','en') = '2000-January-02';
+	}
+
+	test "Operator minus_months" {
+		assert date('2000-01-01') minus_months 5 = date('1999-08-01');
+	}
+
+	test "Operator plus_months" {
+		assert date('2000-01-01') plus_months 5 = date('2000-06-01');
+	}
+
+	test "Operator plus_days" {
+		assert date('2000-01-01') plus_days 12 = date('2000-01-13');
+	}
+
+	test "Operator + (14)" {
+		assert date('2000-01-01') + 86400 = date('2000-01-02');
+	}
+
+	test "Operator minus_minutes" {
+		assert date('2000-01-01') minus_minutes 5  = date('1999-12-31 23:55:00');
+	}
+
+	test "Operator =" {
+		assert (#now = (#now minus_hours 1)) = false;
+	}
+
+	test "Operator minus_weeks" {
+		assert date('2000-01-01') minus_weeks 15 = date('1999-09-18');
+	}
+
+	test "Operator !=" {
+		assert (#now != (#now minus_hours 1)) = true;
+	}
+
+	test "Operator plus_hours" {
+		assert date('2000-01-01') plus_hours 24  = date('2000-01-02');
+	}
+
+
+	test "Operator - (11)" {
+		assert matrix([[1,2],[3,4]]) - matrix([[1,2],[3,4]]) = matrix([[0,0],[0,0]]);
+	}
+
+	test "Operator - (12)" {
+		assert matrix([[1,2],[3,4]]) - 1.5 = matrix([[-0.5,0.5],[1.5,2.5]]);
+	}
+
+	test "Operator - (13)" {
+		assert matrix([[1,2],[3,4]]) - 1 = matrix([[0,1],[2,3]]);
+	}
+
+	test "Operator * (8)" {
+		assert matrix([[1,2],[3,4]]) * 2.5 = matrix([[2.5,5.0],[7.5,10]]);
+	}
+
+	test "Operator / (8)" {
+		assert matrix([[1,2],[3,4]]) / matrix([[1,2],[3,4]]) = matrix([[1,1],[1,1]]);
+	}
+
+	test "Operator * (9)" {
+		assert matrix([[1,2],[3,4]]) * 2 = matrix([[2,4],[6,8]]);
+	}
+
+	test "Operator * (10)" {
+		assert matrix([[1,2],[3,4]]) * matrix([[1,2],[3,4]]) = matrix([[1,4],[9,16]]);
+	}
+
+	test "Operator + (15)" {
+		assert matrix([[1,2],[3,4]]) + 22.5 = matrix([[23.5,24.5],[25.5,26.5]]);
+	}
+
+	test "Operator ." {
+		assert matrix([[1,1],[1,2]]) . matrix([[1,1],[1,2]]) = matrix([[2,3],[3,5]]);
+	}
+
+	test "Operator + (16)" {
+		assert matrix([[1,2],[3,4]]) + 2 = matrix([[3,4],[5,6]]);
+	}
+
+	test "Operator / (9)" {
+		assert matrix([[1,2],[3,4]]) / 2 = matrix([[0.5,1],[1.5,2]]);
+	}
+
+	test "Operator + (17)" {
+		assert matrix([[1,2],[3,4]]) + matrix([[1,2],[3,4]]) = matrix([[2,4],[6,8]]);
+	}
+
+	test "Operator / (10)" {
+		assert matrix([[1,2],[3,4]]) / 2.5 = matrix([[0.4,0.8],[1.2,1.6]]);
+	}
+
+}

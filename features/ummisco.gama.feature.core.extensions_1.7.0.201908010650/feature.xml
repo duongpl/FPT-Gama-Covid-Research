@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ummisco.gama.feature.core.extensions"
+      label="Core extensions of GAMA"
+      version="1.7.0.201908010650"
+      provider-name="UMMISCO, IRIT &amp; IDEES">
+
+   <description url="http://gama-platform.org">
+      Direct extensions to the core of GAMA
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="Gama 1.7.x Update Site" url="http://updates.gama-platform.org"/>
+   </url>
+
+   <requires>
+      <import feature="ummisco.gama.feature.core" version="1.7.0.qualifier"/>
+   </requires>
+
+   <plugin
+         id="irit.gaml.extensions.database"
+         download-size="63"
+         install-size="134"
+         version="1.7.0.201908010650"
+         unpack="false"/>
+
+   <plugin
+         id="msi.gaml.extensions.fipa"
+         download-size="48"
+         install-size="102"
+         version="1.7.0.201908010650"/>
+
+   <plugin
+         id="simtools.gaml.extensions.traffic"
+         download-size="446"
+         install-size="895"
+         version="1.7.0.201908010650"
+         unpack="false"/>
+
+   <plugin
+         id="msi.gaml.architecture.simplebdi"
+         download-size="217"
+         install-size="554"
+         version="1.7.0.201908010650"/>
+
+   <plugin
+         id="ummisco.gaml.extensions.maths"
+         download-size="94"
+         install-size="297"
+         version="1.7.0.201908010650"/>
+
+   <plugin
+         id="simtools.gaml.extensions.physics"
+         download-size="582"
+         install-size="649"
+         version="1.7.0.201908010650"/>
+
+   <plugin
+         id="ummisco.gama.network"
+         download-size="221"
+         install-size="291"
+         version="1.7.0.201908010650"/>
+
+   <plugin
+         id="ummisco.gama.serialize"
+         download-size="584"
+         install-size="747"
+         version="1.7.0.201908010650"/>
+
+</feature>

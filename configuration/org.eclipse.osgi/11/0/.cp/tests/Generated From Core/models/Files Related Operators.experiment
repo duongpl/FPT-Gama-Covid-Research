@@ -1,0 +1,32 @@
+/**
+ *  Files Related Operators
+ *  Author: GAMA Automatic Generator
+ *  Description: Unit tests of operators belonging to "Files Related Operators".
+ */
+
+experiment "Run Tests" type: test {	
+
+	
+		test "file" {
+			let fileT type: file value: file("../includes/Stupid_Cell.Data"); 
+						// fileT represents the file "../includes/Stupid_Cell.Data"
+						// fileT.contents here contains a matrix storing all the data of the text file
+
+		}
+	
+		test "folder" {
+			//file dirT <- folder("../includes/");
+							// dirT represents the repository "../includes/"
+							// dirT.contents here contains the list of the names of included files
+
+		}
+	
+		test "new_folder" {
+			file dirNewT <- new_folder("incl/");   	// dirNewT represents the repository "../incl/"
+																		// eventually creates the directory ../incl
+
+		}
+	
+}
+
+	

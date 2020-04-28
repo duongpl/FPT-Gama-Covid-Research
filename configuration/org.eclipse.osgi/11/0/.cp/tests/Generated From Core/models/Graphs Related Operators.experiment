@@ -1,0 +1,166 @@
+/**
+ *  Graphs Related Operators
+ *  Author: GAMA Automatic Generator
+ *  Description: Unit tests of operators belonging to "Graphs Related Operators".
+ */
+
+experiment "Run Tests" type: test {	
+
+	
+		test "alpha_index" {
+			graph graphEpidemio <- graph([]);
+			float var1 <- alpha_index(graphEpidemio); 	// var1 equals the alpha index of the graph
+
+		}
+	
+		test "beta_index" {
+			graph graphEpidemio <- graph([]);
+			float var1 <- beta_index(graphEpidemio); 	// var1 equals the beta index of the graph
+
+		}
+	
+		test "betweenness_centrality" {
+			graph graphEpidemio <- graph([]);
+			map var1 <- betweenness_centrality(graphEpidemio); 	// var1 equals the betweenness centrality index of the graph
+
+		}
+	
+		test "biggest_cliques_of" {
+			graph my_graph <- graph([]);
+			list<list> var1 <- biggest_cliques_of (my_graph); 	// var1 equals the list of the biggest cliques as list
+
+		}
+	
+		test "connected_components_of" {
+			graph my_graph2 <- graph([]);
+			list<list> var1 <- connected_components_of (my_graph2, true); 	// var1 equals the list of all the components as list
+			graph my_graph <- graph([]);
+			list<list> var3 <- connected_components_of (my_graph); 	// var3 equals the list of all the components as list
+
+		}
+	
+		test "connectivity_index" {
+			graph graphEpidemio <- graph([]);
+			float var1 <- connectivity_index(graphEpidemio); 	// var1 equals the connectivity index of the graph
+
+		}
+	
+		test "contains_edge" {
+			//bool var2 <- graphEpidemio contains_edge (node(0)::node(3)); 	// var2 equals true
+			graph graphFromMap <-  as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			bool var1 <- graphFromMap contains_edge link({1,5},{12,45}); 	// var1 equals true
+			assert var1 = true; 
+
+		}
+	
+		test "contains_vertex" {
+			graph graphFromMap<-  as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			bool var1 <- graphFromMap contains_vertex {1,5}; 	// var1 equals true
+			assert var1 = true; 
+
+		}
+	
+		test "degree_of" {
+			graph graphFromMap <- graph([]);
+			int var1 <- graphFromMap degree_of (node(3)); 	// var1 equals 3
+
+		}
+	
+		test "edge_betweenness" {
+			graph graphEpidemio <- graph([]);
+			map var1 <- edge_betweenness(graphEpidemio); 	// var1 equals the edge betweenness index of the graph
+
+		}
+	
+		test "gamma_index" {
+			graph graphEpidemio <- graph([]);
+			float var1 <- gamma_index(graphEpidemio); 	// var1 equals the gamma index of the graph
+
+		}
+	
+		test "in_degree_of" {
+			graph graphFromMap <- graph([]);
+			int var1 <- graphFromMap in_degree_of (node(3)); 	// var1 equals 2
+
+		}
+	
+		test "in_edges_of" {
+			graph graphFromMap <- graph([]);
+			list var1 <- graphFromMap in_edges_of node({12,45}); 	// var1 equals [LineString]
+
+		}
+	
+		test "maximal_cliques_of" {
+			graph my_graph <- graph([]);
+			list<list> var1 <- maximal_cliques_of (my_graph); 	// var1 equals the list of all the maximal cliques as list
+
+		}
+	
+		test "nb_cycles" {
+			graph graphEpidemio <- graph([]);
+			int var1 <- nb_cycles(graphEpidemio); 	// var1 equals the number of cycles in the graph
+
+		}
+	
+		test "out_degree_of" {
+			graph graphFromMap <- graph([]);
+			int var1 <- graphFromMap out_degree_of (node(3)); 	// var1 equals 4
+
+		}
+	
+		test "out_edges_of" {
+			graph graphFromMap <- graph([]);
+			list var1 <- graphFromMap out_edges_of (node(3)); 	// var1 equals 3
+
+		}
+	
+		test "predecessors_of" {
+			graph graphEpidemio <- as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			list var1 <- graphEpidemio predecessors_of ({1,5}); 	// var1 equals []
+			list var2 <- graphEpidemio predecessors_of node({34,56}); 	// var2 equals [{12;45}]
+
+		}
+	
+		test "rewire_n" {
+			graph graphEpidemio <- as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			graph var1 <- graphEpidemio rewire_n 10; 	// var1 equals the graph with 3 edges rewired
+
+		}
+	
+		test "source_of" {
+			//graph graphEpidemio <- generate_barabasi_albert( ["edges_species"::edge,"vertices_specy"::node,"size"::3,"m"::5] );
+			//unknown var1 <- graphEpidemio source_of(edge(3)); 	// var1 equals node1
+			graph graphFromMap <-  as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			point var3 <- graphFromMap source_of(link({1,5},{12,45})); 	// var3 equals {1,5}
+			assert var3 = {1,5}; 
+
+		}
+	
+		test "successors_of" {
+			graph graphEpidemio <- as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			list var1 <- graphEpidemio successors_of ({1,5}); 	// var1 equals [{12,45}]
+			assert var1 = [{12,45}]; 
+			list var2 <- graphEpidemio successors_of node({34,56}); 	// var2 equals []
+			assert var2 = []; 
+
+		}
+	
+		test "target_of" {
+			//graph graphEpidemio <- generate_barabasi_albert( ["edges_species"::edge,"vertices_specy"::node,"size"::3,"m"::5] );
+			//unknown var1 <- graphEpidemio source_of(edge(3)); 	// var1 equals node1
+			graph graphFromMap <-  as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			unknown var3 <- graphFromMap target_of(link({1,5},{12,45})); 	// var3 equals {12,45}
+			assert var3 = {12,45}; 
+
+		}
+	
+		test "weight_of" {
+			graph graphFromMap <-  as_edge_graph([{1,5}::{12,45},{12,45}::{34,56}]);
+			float var1 <- graphFromMap weight_of(link({1,5},{12,45})); 	// var1 equals 1.0
+			assert var1 = 1.0; 
+
+		}
+	
+}
+
+	
