@@ -28,6 +28,6 @@ release/*
 /*/gaml/
 /*/bin/
 msi.gama.ext/lib/
+configuration
+p2
 .__*
-*/org.eclipse.ogsi/*
-configuration/*
