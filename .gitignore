@@ -28,14 +28,6 @@ release/*
 /*/gaml/
 /*/bin/
 msi.gama.ext/lib/
-configuration/org.eclipse.osgi/.manager/.fileTable2
-configuration/org.eclipse.osgi/.manager/.fileTable3
-configuration/org.eclipse.osgi/110/data/-1321620569/artifacts.xml
-configuration/org.eclipse.osgi/118/data/cache.timestamps
-configuration/org.eclipse.osgi/118/data/listener_1925729951/artifacts.jar
-configuration/org.eclipse.osgi/framework.info.2
-configuration/org.eclipse.update/platform.xml
-p2/org.eclipse.equinox.p2.engine/profileRegistry/Default…/org.eclipse.equinox.p2.artifact.repository.prefs
-p2/org.eclipse.equinox.p2.engine/profileRegistry/Defau…/org.eclipse.equinox.p2.metadata.repository.prefs
-p2/*
+configuration
+p2
 .__*
