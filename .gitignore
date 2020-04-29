@@ -6,3 +6,4 @@ gama_workspace/[.build_in_models]*
 *.resources
 *.xmi
 *.markers
+gama_workspace\.metadata\.plugins\org.eclipse.e4.workbench\workbench.xmi

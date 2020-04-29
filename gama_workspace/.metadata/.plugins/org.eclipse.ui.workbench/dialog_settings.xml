@@ -22,6 +22,8 @@
 		<item key="WizardFileSystemResourceImportPage1.STORE_OVERWRITE_EXISTING_RESOURCES_ID" value="false"/>
 		<item key="WizardFileSystemResourceImportPage1.STORE_CREATE_CONTAINER_STRUCTURE_ID" value="false"/>
 		<list key="WizardFileSystemResourceImportPage1.STORE_SOURCE_NAMES_ID">
+			<item value="C:\Users\DUONG\Desktop\Session 2\1. Schelling, Trafic, ForestFire\Forest Fire"/>
+			<item value="C:\Users\DUONG\Desktop\Session 2\7. ModelTraffic"/>
 			<item value="C:\Users\DUONG\Desktop\Session 1\PhucXa_Flood"/>
 		</list>
 	</section>
