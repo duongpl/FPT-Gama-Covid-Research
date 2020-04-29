@@ -8,7 +8,7 @@ model session1
 
 /* Insert your model definition here */
 global {
-	int num_of_susceptible <- 100;
+	int num_of_susceptible <- 500;
 	int num_of_infectious <- 1;
 	int num_of_exposed <- 0;
 
@@ -23,14 +23,16 @@ global {
 species susceptible skills: [moving] {
 	int state <- 0;
 	int attack_range <- 2;
+	float save_time <- 0.0;
 
 	reflex moving {
-		if (cycle mod 1000 = 0 and state = 1) {
+		if ((time - save_time) mod 100 = 0 and state = 1) {
 			state <- 2;
-		} else if (cycle mod 1000 = 0 and state = 2) {
+		} else if ((time - save_time) mod 100 = 0 and state = 2) {
 			state <- 3;
 		}
 
+		write sample(time);
 		do wander;
 	}
 
@@ -75,6 +77,7 @@ species susceptible skills: [moving] {
 		ask susceptible at_distance attack_range {
 			if (myself.state = 2 and self.state = 0) {
 				self.state <- 1;
+				self.save_time <- time;
 			}
 
 		}
@@ -86,15 +89,16 @@ species susceptible skills: [moving] {
 species infectious skills: [moving] {
 	int state <- 2;
 	int attack_range <- 2;
+	float save_time <- 0.0;
 
 	reflex moving {
-		if (cycle mod 1000 = 0 and cycle != 0 and state = 2) {
-			write sample(cycle);
+		if ((time - save_time) mod 100 = 0 and time != 0 and state = 2) {
+		//			write sample(time);
 			state <- 3;
 		}
 
 		do wander;
-		//		write sample(cycle);
+		//		write sample(time);
 	}
 
 	aspect base {
@@ -115,6 +119,7 @@ species infectious skills: [moving] {
 		ask susceptible at_distance attack_range {
 			if (myself.state = 2 and self.state = 0) {
 				self.state <- 1;
+				self.save_time <- time;
 			}
 
 		}
