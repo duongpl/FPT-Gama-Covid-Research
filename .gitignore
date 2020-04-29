@@ -1,1 +1,8 @@
 gama_workspace/.metadata/*
+gama_workspace/.metadata/.plugins/*
+gama_workspace/[.build_in_models]*
+*.state
+*.prefs
+*.resources
+*.xmi
+*.markers
