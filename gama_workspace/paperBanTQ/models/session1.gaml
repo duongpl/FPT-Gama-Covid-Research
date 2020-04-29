@@ -136,7 +136,7 @@ species infectious skills: [moving] {
 //	//			if(self.is_infected) {
 //	//				myself.is_infected <- true;
 //	//			}else if(myself.is_infected) {
-//	//				self.is_infected <- true;
+//	//				self.is_infected <- true;ss
 //	//			}
 //	//		}
 //	//	}
