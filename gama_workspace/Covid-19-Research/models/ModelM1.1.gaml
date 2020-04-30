@@ -13,7 +13,7 @@ global {
 	float mask_rate <- 0.5;
 	float E_to_I_rate <- 0.8;
 	bool have_mask <- flip(mask_rate);
-	float infected_rate <- 0.9;
+	float infected_rate <- 1.0;
 	bool is_infected <- flip(infected_rate);
 
 	init {
