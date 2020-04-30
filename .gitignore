@@ -30,8 +30,7 @@ release/*
 msi.gama.ext/lib/
 .__*
 lugins\org.eclipse.e4.workbench\workbench.xmi
-gama_workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/Visualization and User Interaction/.indexes/7d/properties.index
 *.index
-gama_workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/Visualization and User Interaction/.markers
-gama_workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/Tutorials/.markers
-gama_workspace/.metadata/.plugins/org.eclipse.core.resources/.projects/Visualization and User Interaction/.indexes/3d/88/properties.index
+*.markers
+
+
