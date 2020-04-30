@@ -10,26 +10,34 @@ model session1
 global {
 	int num_of_susceptible <- 500;
 	int num_of_infectious <- 1;
-	int num_of_exposed <- 0;
+	float mask_rate <- 0.5;
+	float E_to_I_rate <- 0.4;
+	bool have_mask <- flip(mask_rate);
+	float infected_rate <- 0.19;
+	bool is_infected <- flip(infected_rate);
 
 	init {
 		create susceptible number: num_of_susceptible;
 		create infectious number: num_of_infectious;
-		//		create exposed number: num_of_exposed;
 	}
 
 }
 
 species susceptible skills: [moving] {
 	int state <- 0;
-	int attack_range <- 2;
+	float attack_range <- 2 #meter;
 	float save_time <- 0.0;
+	int count_I <- num_of_infectious;
+	int count_S <- num_of_susceptible;
+	bool to_I_or_S <- flip(E_to_I_rate);
 
 	reflex moving {
-		if ((time - save_time) mod 100 = 0 and state = 1) {
+		if (((time - save_time) mod 100 = 0) and (state = 1) and to_I_or_S) {
 			state <- 2;
 		} else if ((time - save_time) mod 100 = 0 and state = 2) {
 			state <- 3;
+		} else {
+			state <- 0;
 		}
 
 		write sample(time);
@@ -58,26 +66,21 @@ species susceptible skills: [moving] {
 
 	}
 
-	//	reflex infected when: state = 2 {
-	//		list<agent> neighbors <- agents at_distance (attack_range);
-	//		loop i from: 0 to: length(neighbors) - 1 {
-	//			ask neighbors at i {
-	//				if (myself.state = 0) {
-	//					myself.state <- 1;
-	//				}else {
-	//					break;
-	//				}
-	//
-	//			}
-	//
-	//		}
-	//
-	//	}
 	reflex attack when: !empty(susceptible at_distance attack_range) {
 		ask susceptible at_distance attack_range {
-			if (myself.state = 2 and self.state = 0) {
-				self.state <- 1;
-				self.save_time <- time;
+			if (have_mask) {
+				is_infected <- flip(infected_rate * 0.5);
+				if (myself.state = 2 and self.state = 0 and is_infected) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
+			} else {
+				if (myself.state = 2 and self.state = 0 and is_infected) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
 			}
 
 		}
@@ -88,8 +91,9 @@ species susceptible skills: [moving] {
 
 species infectious skills: [moving] {
 	int state <- 2;
-	int attack_range <- 2;
+	float attack_range <- 2 #meter;
 	float save_time <- 0.0;
+	bool to_I_or_S <- flip(E_to_I_rate);
 
 	reflex moving {
 		if ((time - save_time) mod 100 = 0 and time != 0 and state = 2) {
@@ -117,9 +121,19 @@ species infectious skills: [moving] {
 
 	reflex attack when: !empty(susceptible at_distance attack_range) {
 		ask susceptible at_distance attack_range {
-			if (myself.state = 2 and self.state = 0) {
-				self.state <- 1;
-				self.save_time <- time;
+			if (have_mask) {
+				is_infected <- flip(infected_rate * 0.5);
+				if (myself.state = 2 and self.state = 0 and is_infected) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
+			} else {
+				if (myself.state = 2 and self.state = 0 and is_infected) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
 			}
 
 		}
@@ -128,43 +142,17 @@ species infectious skills: [moving] {
 
 }
 
-//species rat skills: [moving] {
-//	bool is_infected <- flip(0.5);
-//	int attack_range <- 5;
-//
-//	reflex moving {
-//		do wander;
-//	}
-//
-//	//	reflex attack when: !empty(people at_distance attack_range ) {
-//	//		ask people at_distance attack_range {
-//	//			if(self.is_infected) {
-//	//				myself.is_infected <- true;
-//	//			}else if(myself.is_infected) {
-//	//				self.is_infected <- true;
-//	//			}
-//	//		}
-//	//	}
-//	aspect base {
-//		draw circle(1) color: (is_infected) ? #red : #green;
-//	}
-//
-//}
 experiment myExp type: gui {
-//	parameter "number of susceptible" var: num_of_susceptible;
-//	//	parameter "number of rat" var: num_of_rat;
+	parameter "Infected rate" var: infected_rate;
+	parameter "Susceptible have mask rate" var: mask_rate;
+	parameter "Number of Infectious" var: num_of_infectious;
+	parameter "Number of Susceptible" var: num_of_susceptible;
+	parameter "E to I rate" var: E_to_I_rate;
 	output {
 		display myDisplay {
 			species susceptible aspect: base;
 			species infectious aspect: base;
 		}
-
-		//		display my_chart {
-		//			chart "number of infected" {
-		//			//				data "infected people" value: length (people where (each.is_infected = true));
-		//			}
-		//
-		//		}
 
 	}
 
