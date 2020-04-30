@@ -11,9 +11,9 @@ global {
 	int num_of_susceptible <- 500;
 	int num_of_infectious <- 1;
 	float mask_rate <- 0.5;
-	float E_to_I_rate <- 0.4;
+	float E_to_I_rate <- 0.8;
 	bool have_mask <- flip(mask_rate);
-	float infected_rate <- 0.19;
+	float infected_rate <- 0.9;
 	bool is_infected <- flip(infected_rate);
 
 	init {
@@ -34,11 +34,12 @@ species susceptible skills: [moving] {
 	reflex moving {
 		if (((time - save_time) mod 100 = 0) and (state = 1) and to_I_or_S) {
 			state <- 2;
-		} else if ((time - save_time) mod 100 = 0 and state = 2) {
-			state <- 3;
-		} else {
+		}else if(((time - save_time) mod 100 = 0) and state = 1){
 			state <- 0;
-		}
+		} 
+		else if ((time - save_time) mod 100 = 0 and state = 2) {
+			state <- 3;
+		} 
 
 		write sample(time);
 		do wander;
@@ -66,7 +67,7 @@ species susceptible skills: [moving] {
 
 	}
 
-	reflex attack when: !empty(susceptible at_distance attack_range) {
+	reflex attack when: !empty(susceptible at_distance attack_range) and state = 2{
 		ask susceptible at_distance attack_range {
 			if (have_mask) {
 				is_infected <- flip(infected_rate * 0.5);
