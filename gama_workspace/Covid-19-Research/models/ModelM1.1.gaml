@@ -10,11 +10,11 @@ model session1
 global {
 	int num_of_susceptible <- 500;
 	int num_of_infectious <- 1;
-	float mask_rate <- 0.5;
-	float E_to_I_rate <- 0.8;
-	bool have_mask <- flip(mask_rate);
+	float mask_rate <- 0.8;
+	float type_I <- 0.7;
 	float infected_rate <- 1.0;
-	bool is_infected <- flip(infected_rate);
+	float infected_rateA <- 0.55;
+	
 
 	init {
 		create susceptible number: num_of_susceptible;
@@ -24,24 +24,32 @@ global {
 }
 
 species susceptible skills: [moving] {
+	
 	int state <- 0;
-	float attack_range <- 2 #meter;
+	float infect_range <- 2 #meter;
 	float save_time <- 0.0;
 	int count_I <- num_of_infectious;
 	int count_S <- num_of_susceptible;
-	bool to_I_or_S <- flip(E_to_I_rate);
-
+	bool is_infected <- flip(infected_rate);
+	bool is_infectedA <- flip(infected_rateA);
+	bool have_mask <- flip(mask_rate);
+	bool In_or_Ia <- flip(type_I);
+	bool N ;
+	bool A ;
+	int keeptimeE <- rnd(30,100);
+	int keeptimeI <- rnd(100,300);
+	
 	reflex moving {
-		if (((time - save_time) mod 100 = 0) and (state = 1) and to_I_or_S) {
+		if (((time - save_time) mod keeptimeE = 0) and state = 1 and In_or_Ia) {
 			state <- 2;
-		}else if(((time - save_time) mod 100 = 0) and state = 1){
-			state <- 0;
-		} 
-		else if ((time - save_time) mod 100 = 0 and state = 2) {
+		}else if(((time - save_time) mod keeptimeE = 0) and state = 1 and !In_or_Ia){
+			state <- 4;
+		}
+		else if ((time - save_time) mod keeptimeI = 0 and (state = 2 or state = 4)) {
 			state <- 3;
 		} 
 
-		write sample(time);
+//		write sample(time);
 		do wander;
 	}
 
@@ -62,42 +70,46 @@ species susceptible skills: [moving] {
 			match 3 {
 				draw circle(1) color: #green;
 			}
-
-		}
-
-	}
-
-	reflex attack when: !empty(susceptible at_distance attack_range) and state = 2{
-		ask susceptible at_distance attack_range {
-			if (have_mask) {
-				is_infected <- flip(infected_rate * 0.5);
-				if (myself.state = 2 and self.state = 0 and is_infected) {
-					self.state <- 1;
-					self.save_time <- time;
-				}
-
-			} else {
-				if (myself.state = 2 and self.state = 0 and is_infected) {
-					self.state <- 1;
-					self.save_time <- time;
-				}
-
+			
+			match 4 {
+				draw circle(1) color: #red;
 			}
-
 		}
 
 	}
 
+	reflex attack when: !empty(susceptible at_distance infect_range) and (state = 2 or state = 4){
+		ask susceptible at_distance infect_range {
+			if (self.have_mask) {
+				N <- flip(infected_rate * 0.5);
+				A <- flip(infected_rateA * 0.5);
+			}
+			if(state = 2){
+				if (self.state = 0 and N) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+			}else{
+				if (self.state = 0 and A) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+			}
+		}
+	}
 }
 
 species infectious skills: [moving] {
+//	float speed <- 1.0;
 	int state <- 2;
-	float attack_range <- 2 #meter;
+	float infect_range <- 2 #meter;
 	float save_time <- 0.0;
-	bool to_I_or_S <- flip(E_to_I_rate);
-
+	bool have_mask <- flip(mask_rate);
+	bool is_infected <- flip(infected_rate);
+	int keeptime <- rnd(100,300);
+	
 	reflex moving {
-		if ((time - save_time) mod 100 = 0 and time != 0 and state = 2) {
+		if ((time - save_time) mod keeptime = 0 and time != 0 and (state = 2 or state = 4)) {
 		//			write sample(time);
 			state <- 3;
 		}
@@ -117,20 +129,20 @@ species infectious skills: [moving] {
 			}
 
 		}
-
+//		write sample(length(infectious));
 	}
 
-	reflex attack when: !empty(susceptible at_distance attack_range) {
-		ask susceptible at_distance attack_range {
+	reflex attack when: !empty(susceptible at_distance infect_range) and state = 2 {
+		ask susceptible at_distance infect_range {
 			if (have_mask) {
 				is_infected <- flip(infected_rate * 0.5);
-				if (myself.state = 2 and self.state = 0 and is_infected) {
+				if (self.state = 0 and is_infected) {
 					self.state <- 1;
 					self.save_time <- time;
 				}
 
 			} else {
-				if (myself.state = 2 and self.state = 0 and is_infected) {
+				if (self.state = 0 and is_infected) {
 					self.state <- 1;
 					self.save_time <- time;
 				}
@@ -148,11 +160,21 @@ experiment myExp type: gui {
 	parameter "Susceptible have mask rate" var: mask_rate;
 	parameter "Number of Infectious" var: num_of_infectious;
 	parameter "Number of Susceptible" var: num_of_susceptible;
-	parameter "E to I rate" var: E_to_I_rate;
+	parameter "Infect rate of I(n)" var: infected_rate;
+	parameter "Infect rate of I(a)" var: infected_rateA;
+	init {
+		create simulation with: (seed::2);
+	}
 	output {
 		display myDisplay {
 			species susceptible aspect: base;
 			species infectious aspect: base;
+			overlay transparency: 0.3 background: rgb(99, 85, 66, 255) position: {50 °px, 50 °px} size: {250 °px, 250 °px} border: rgb(99, 85, 66, 255) rounded: true {
+				draw ('Number of S: ' + susceptible count (each.state = 0)) at: {40 °px, 70 °px} font: font("Arial", 18, #bold) color:#white;
+				draw ('Number of E: ' + susceptible count (each.state = 1)) at: {40 °px, 100 °px} font:font("Arial", 18, #bold) color: #white;
+				draw ('Number of I: ' + (susceptible count (each.state = 2 or each.state = 4) + infectious count(each.state = 2))) at: {40 °px, 130 °px} font:font("Arial", 18, #bold) color: #white;
+				draw ('Number of R: ' + (susceptible count (each.state = 3)) + infectious count(each.state = 3)) at: {40 °px, 160 °px} font:font("Arial", 18, #bold) color: #white;
+			}
 		}
 
 	}
