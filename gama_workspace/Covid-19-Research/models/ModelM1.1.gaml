@@ -14,15 +14,20 @@ global {
 	float type_I <- 0.7;
 	float infected_rate <- 1.0;
 	float infected_rateA <- 0.55;
+//	geometry shape<-square(150 #m);
 
 	init {
 		create susceptible number: num_of_susceptible;
 		create infectious number: num_of_infectious;
 	}
+//	reflex end_simulation when:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
+//    	do pause;
+//    }
 
 }
 
 species susceptible skills: [moving] {
+	float speed <- (2 + rnd(5)) #m;
 	int state <- 0;
 	float infect_range <- 2 #meter;
 	float save_time <- 0.0;
@@ -103,7 +108,7 @@ species susceptible skills: [moving] {
 	} }
 
 species infectious skills: [moving] {
-//	float speed <- 1.0;
+	float speed <- (2 + rnd(5)) #m;
 	int state <- 2;
 	float infect_range <- 2 #meter;
 	float save_time <- 0.0;
@@ -161,29 +166,40 @@ species infectious skills: [moving] {
 experiment myExp type: gui {
 	parameter "Infected rate" var: infected_rate;
 	parameter "Susceptible have mask rate" var: mask_rate;
-	parameter "Number of Infectious" var: num_of_infectious;
-	parameter "Number of Susceptible" var: num_of_susceptible;
+	parameter "Number of Infectious" var: num_of_infectious min: 1 max:500;
+	parameter "Number of Susceptible" var: num_of_susceptible min: 1 max: 500;
 	parameter "Infect rate of I(n)" var: infected_rate;
 	parameter "Infect rate of I(a)" var: infected_rateA;
 
 	init {
-		create simulation with: (seed::2);
+		create simulation with: (seed::0);
+		create simulation with: (seed::1);
+//		create simulation with: (seed::2);
+//		create simulation with: (seed::3);
+//		create simulation with: (seed::4);
 	}
 
 	output {
-		display myDisplay {
-			species susceptible aspect: base;
-			species infectious aspect: base;
-			overlay transparency: 0.3 background: rgb(99, 85, 66, 255) position: {50 °px, 50 °px} size: {250 °px, 250 °px} border: rgb(99, 85, 66, 255) rounded: true {
-				draw ('Number of S: ' + susceptible count (each.state = 0)) at: {40 °px, 70 °px} font: font("Arial", 18, #bold) color: #white;
-				draw ('Number of E: ' + susceptible count (each.state = 1)) at: {40 °px, 100 °px} font: font("Arial", 18, #bold) color: #white;
-				draw ('Number of I: ' + (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2))) at: {40 °px, 130 °px} font: font("Arial", 18, #bold)
-				color: #white;
-				draw ('Number of R: ' + (susceptible count (each.state = 3) + infectious count (each.state = 3))) at: {40 °px, 160 °px} font: font("Arial", 18, #bold) color: #white;
+//		display myDisplay {
+//			species susceptible aspect: base;
+//			species infectious aspect: base;
+////			overlay transparency: 0.3 background: rgb(99, 85, 66, 255) position: {50 °px, 50 °px} size: {250 °px, 250 °px} border: rgb(99, 85, 66, 255) rounded: true {
+////				draw ('Number of S: ' + susceptible count (each.state = 0)) at: {40 °px, 70 °px} font: font("Arial", 18, #bold) color: #white;
+////				draw ('Number of E: ' + susceptible count (each.state = 1)) at: {40 °px, 100 °px} font: font("Arial", 18, #bold) color: #white;
+////				draw ('Number of I: ' + (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2))) at: {40 °px, 130 °px} font: font("Arial", 18, #bold)
+////				color: #white;
+////				draw ('Number of R: ' + (susceptible count (each.state = 3) + infectious count (each.state = 3))) at: {40 °px, 160 °px} font: font("Arial", 18, #bold) color: #white;
+////			}
+//		}
+		display chart refresh: every(5 #cycle){
+			chart "c" type: series {
+				data value: (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) legend: "Number of I" color:#red;
 			}
-
 		}
-
+		monitor "number of S" value: susceptible count(each.state = 0);
+		monitor "number of E" value: susceptible count (each.state = 1);
+		monitor "number of I" value: (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2));
+		monitor "number of R" value: (susceptible count (each.state = 3) + infectious count (each.state = 3));
 	}
 
 }
