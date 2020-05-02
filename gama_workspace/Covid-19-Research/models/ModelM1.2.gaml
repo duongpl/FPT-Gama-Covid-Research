@@ -4,7 +4,7 @@
 * Description: 
 * Tags: Tag1, Tag2, TagN
 ***/
-model E13
+model ModelM12
 
 /* Insert your model definition here */
 global {
@@ -14,30 +14,24 @@ global {
 	float type_I <- 0.7;
 	float infected_rate <- 1.0;
 	float infected_rateA <- 0.55;
-	int the_cycle_of_the_maximum_number_of_infected_peoples update: calcycle();
-	int The_duration_of_the_epidemic update: calduration();
-	int tem <- (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2));
-	int calcycle{
-		if((susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) > tem){
-			tem <- (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2));
-		}
-		return cycle;
-	}
-	int calduration{
-		if((susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) = 0 and susceptible count(each.state = 1) = 0){
-			The_duration_of_the_epidemic <- The_duration_of_the_epidemic + 1;
-		}
-		return The_duration_of_the_epidemic;
-	}
+	list<int> r0;
 //	geometry shape<-square(150 #m);
-
 	init {
 		create susceptible number: num_of_susceptible;
 		create infectious number: num_of_infectious;
 	}
-//	reflex end_simulation when:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
-//    	do pause;
-//    }
+	reflex end_simulation when:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
+    	do pause;
+    }
+    reflex addd{
+    	r0 <- [];
+				loop s over: susceptible{
+					add s.number_infected to: r0;
+				}
+				loop s over: infectious{
+					add s.number_infected to: r0;
+				}
+    }
 
 }
 
@@ -56,6 +50,7 @@ species susceptible skills: [moving] {
 	bool A;
 	int keeptimeE <- rnd(30, 100);
 	int keeptimeI <- rnd(100, 300);
+	int number_infected <- 0;
 
 	reflex moving {
 		if (time != save_time) {
@@ -94,6 +89,7 @@ species susceptible skills: [moving] {
 			}
 
 		}
+		
 
 	}
 
@@ -108,12 +104,14 @@ species susceptible skills: [moving] {
 				if (self.state = 0 and N) {
 					self.state <- 1;
 					self.save_time <- time;
+					number_infected <- number_infected + 1;
 				}
 
 			} else {
 				if (self.state = 0 and A) {
 					self.state <- 1;
 					self.save_time <- time;
+					number_infected <- number_infected + 1;
 				}
 
 			}
@@ -130,6 +128,7 @@ species infectious skills: [moving] {
 	bool have_mask <- flip(mask_rate);
 	bool is_infected <- flip(infected_rate);
 	int keeptime <- rnd(100, 300);
+	int number_infected <- 0;
 
 	reflex moving {
 		if ((time - save_time) mod keeptime = 0 and time != 0 and (state = 2 or state = 4)) {
@@ -152,7 +151,6 @@ species infectious skills: [moving] {
 			}
 
 		}
-		//		write sample(length(infectious));
 	}
 
 	reflex attack when: !empty(susceptible at_distance infect_range) and state = 2 {
@@ -162,12 +160,14 @@ species infectious skills: [moving] {
 				if (self.state = 0 and is_infected) {
 					self.state <- 1;
 					self.save_time <- time;
+					number_infected <- number_infected + 1;
 				}
 
 			} else {
 				if (self.state = 0 and is_infected) {
 					self.state <- 1;
 					self.save_time <- time;
+					number_infected <- number_infected + 1;
 				}
 
 			}
@@ -178,33 +178,28 @@ species infectious skills: [moving] {
 
 }
 
-experiment myExp type: batch keep_seed:false until:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
-    reflex t {
-        save [the_cycle_of_the_maximum_number_of_infected_peoples,The_duration_of_the_epidemic] to: "result/e13.csv" type: "csv";
-    }
-//	output {
+experiment myExp type: gui {
+	parameter "Infected rate" var: infected_rate;
+	parameter "Susceptible have mask rate" var: mask_rate;
+	parameter "Number of Infectious" var: num_of_infectious min: 1 max:500;
+	parameter "Number of Susceptible" var: num_of_susceptible min: 1 max: 500;
+	parameter "Infect rate of I(n)" var: infected_rate;
+	parameter "Infect rate of I(a)" var: infected_rateA;
+
+	output {
 //		display myDisplay {
 //			species susceptible aspect: base;
 //			species infectious aspect: base;
-////			overlay transparency: 0.3 background: rgb(99, 85, 66, 255) position: {50 °px, 50 °px} size: {250 °px, 250 °px} border: rgb(99, 85, 66, 255) rounded: true {
-////				draw ('Number of S: ' + susceptible count (each.state = 0)) at: {40 °px, 70 °px} font: font("Arial", 18, #bold) color: #white;
-////				draw ('Number of E: ' + susceptible count (each.state = 1)) at: {40 °px, 100 °px} font: font("Arial", 18, #bold) color: #white;
-////				draw ('Number of I: ' + (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2))) at: {40 °px, 130 °px} font: font("Arial", 18, #bold)
-////				color: #white;
-////				draw ('Number of R: ' + (susceptible count (each.state = 3) + infectious count (each.state = 3))) at: {40 °px, 160 °px} font: font("Arial", 18, #bold) color: #white;
-////			}
 //		}
-//		
-//		//evolution of the number of I
-////		display chart refresh: every(5 #cycle){
-////			chart "c" type: series {
-////				data value: (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) legend: "Number of I" color:#red;
-////			}
-////		}
-//		monitor "number of S" value: susceptible count(each.state = 0);
-//		monitor "number of E" value: susceptible count (each.state = 1);
-//		monitor "number of I" value: (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2));
-//		monitor "number of R" value: (susceptible count (each.state = 3) + infectious count (each.state = 3));
-//	}
+		
+		//evolution of the number of I (1.2)
+		display chart refresh: every(5 #cycle){
+			chart "c" type: series {
+				data value: min(r0) legend: "Min" color:#red;
+				data value: max(r0) legend: "Max" color:#blue;
+				data value: sum(r0)/length(r0) legend: "Avarage" color:#orange;
+			}
+		}
+	}
 
 }
