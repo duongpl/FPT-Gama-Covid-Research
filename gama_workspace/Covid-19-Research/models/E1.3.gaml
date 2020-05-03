@@ -182,18 +182,12 @@ experiment myExp type: batch keep_seed:false until:(susceptible count (each.stat
     reflex t {
         save [the_cycle_of_the_maximum_number_of_infected_peoples,The_duration_of_the_epidemic] to: "result/e13.csv" type: "csv";
     }
-//	output {
-//		display myDisplay {
-//			species susceptible aspect: base;
-//			species infectious aspect: base;
-////			overlay transparency: 0.3 background: rgb(99, 85, 66, 255) position: {50 °px, 50 °px} size: {250 °px, 250 °px} border: rgb(99, 85, 66, 255) rounded: true {
-////				draw ('Number of S: ' + susceptible count (each.state = 0)) at: {40 °px, 70 °px} font: font("Arial", 18, #bold) color: #white;
-////				draw ('Number of E: ' + susceptible count (each.state = 1)) at: {40 °px, 100 °px} font: font("Arial", 18, #bold) color: #white;
-////				draw ('Number of I: ' + (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2))) at: {40 °px, 130 °px} font: font("Arial", 18, #bold)
-////				color: #white;
-////				draw ('Number of R: ' + (susceptible count (each.state = 3) + infectious count (each.state = 3))) at: {40 °px, 160 °px} font: font("Arial", 18, #bold) color: #white;
-////			}
-//		}
+	output {
+		display myDisplay {
+			species susceptible aspect: base;
+			species infectious aspect: base;
+		}
+	}
 //		
 //		//evolution of the number of I
 ////		display chart refresh: every(5 #cycle){
