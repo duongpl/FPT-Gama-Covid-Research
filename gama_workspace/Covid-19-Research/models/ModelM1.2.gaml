@@ -25,12 +25,13 @@ global {
     }
     reflex addd{
     	r0 <- [];
-				loop s over: susceptible{
+				loop s over: susceptible where(each.state = 2 or each.state = 4){
 					add s.number_infected to: r0;
 				}
-				loop s over: infectious{
+				loop s over: infectious where(each.state = 2 or each.state = 4){
 					add s.number_infected to: r0;
 				}
+				write sample(r0);
     }
 
 }
@@ -51,7 +52,7 @@ species susceptible skills: [moving] {
 	int keeptimeE <- rnd(30, 100);
 	int keeptimeI <- rnd(100, 300);
 	int number_infected <- 0;
-
+	
 	reflex moving {
 		if (time != save_time) {
 			if (((time - save_time) mod keeptimeE = 0) and state = 1 and In_or_Ia) {
@@ -104,14 +105,14 @@ species susceptible skills: [moving] {
 				if (self.state = 0 and N) {
 					self.state <- 1;
 					self.save_time <- time;
-					number_infected <- number_infected + 1;
+					myself.number_infected <- myself.number_infected + 1;
 				}
 
 			} else {
 				if (self.state = 0 and A) {
 					self.state <- 1;
 					self.save_time <- time;
-					number_infected <- number_infected + 1;
+					myself.number_infected <- myself.number_infected + 1;
 				}
 
 			}
@@ -160,14 +161,14 @@ species infectious skills: [moving] {
 				if (self.state = 0 and is_infected) {
 					self.state <- 1;
 					self.save_time <- time;
-					number_infected <- number_infected + 1;
+					myself.number_infected <- myself.number_infected + 1;
 				}
 
 			} else {
 				if (self.state = 0 and is_infected) {
 					self.state <- 1;
 					self.save_time <- time;
-					number_infected <- number_infected + 1;
+					myself.number_infected <- myself.number_infected + 1;
 				}
 
 			}
@@ -193,11 +194,11 @@ experiment myExp type: gui {
 //		}
 		
 		//evolution of the number of I (1.2)
-		display chart refresh: every(5 #cycle){
+		display chart {
 			chart "c" type: series {
 				data value: min(r0) legend: "Min" color:#red;
 				data value: max(r0) legend: "Max" color:#blue;
-				data value: sum(r0)/length(r0) legend: "Avarage" color:#orange;
+				data value: sum(r0)/((susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) = 0 ? 1 : (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2))) legend: "Avarage" color:#orange;
 			}
 		}
 	}
