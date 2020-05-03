@@ -1,13 +1,14 @@
-
 model flood
 
 /* Insert your model definition here */
 global {
-
-// Starting date of the simulation
-//date starting_date <- #now;
-
-// Time step to represent very short term movement (for congestion)
+	int num_of_susceptible <- 500;
+	int num_of_infectious <- 100;
+	float mask_rate <- 0.8;
+	float type_I <- 0.7;
+	float infected_rate <- 1.0;
+	float infected_rateA <- 0.55;
+	// Time step to represent very short term movement (for congestion)
 	float step <- 10 #sec;
 	int nb_of_people;
 
@@ -45,6 +46,7 @@ global {
 	int casualties;
 
 	init {
+	//		create susceptible number: num_of_susceptible;
 		create road from: shapefile_roads;
 		create home from: shapefile_homes;
 		create industry from: shapefile_industry;
@@ -53,8 +55,14 @@ global {
 		create school from: shapefile_school;
 		create supermarket from: shapefile_supermarket;
 		create hazard from: shapefile_redriver;
-		create inhabitant number: nb_of_people {
+		create susceptible number: num_of_susceptible {
+		//			home_point <- any(home);
 			int live_in <- rnd(1, 6);
+			move_to <- rnd(1, 6);
+			loop while: live_in = move_to {
+				move_to <- rnd(1, 6);
+			}
+
 			switch live_in {
 				match 1 {
 					location <- any_location_in(one_of(home));
@@ -82,10 +90,70 @@ global {
 
 			}
 
+			switch move_to {
+				match 1 {
+					home_point <- any(home);
+				}
+
+				match 2 {
+					industry_point <- any(industry);
+				}
+
+				match 3 {
+					office_point <- any(office);
+				}
+
+				match 4 {
+					park_point <- any(park);
+				}
+
+				match 5 {
+					school_point <- any(school);
+				}
+
+				match 6 {
+					supermarket_point <- any(supermarket);
+				}
+
+			}
+
 			perception_distance <- rnd(min_perception_distance, max_perception_distance);
 		}
+		//
+		//		create infectious number: num_of_infectious {
+		//			int live_in <- rnd(1, 6);
+		//			int move_to <- rnd(1, 6);
+		//			switch live_in {
+		//				match 1 {
+		//					location <- any_location_in(one_of(home));
+		//				}
+		//
+		//				match 2 {
+		//					location <- any_location_in(one_of(industry));
+		//				}
+		//
+		//				match 3 {
+		//					location <- any_location_in(one_of(office));
+		//				}
+		//
+		//				match 4 {
+		//					location <- any_location_in(one_of(park));
+		//				}
+		//
+		//				match 5 {
+		//					location <- any_location_in(one_of(school));
+		//				}
+		//
+		//				match 6 {
+		//					location <- any_location_in(one_of(supermarket));
+		//				}
+		//
+		//			}
+		//
+		//			perception_distance <- rnd(min_perception_distance, max_perception_distance);
+		//		}
 
-//		create crisis_manager;
+		//		create crisis_manager;
 		road_network <- as_edge_graph(road);
 		road_weights <- road as_map (each::each.shape.perimeter);
 	}
@@ -123,13 +191,8 @@ global {
 		write "----------";
 	}
 	// Stop the simulation when everyone is either saved :) or dead :(
-	reflex stop_simu when: inhabitant all_match (each.saved or each.drowned) {
-		do pause;
-	}
 
 }
-
-
 
 /*
  * Represent the water body. When attribute triggered is turn to true, inhabitant
@@ -155,52 +218,12 @@ species hazard {
 			triggered <- true;
 		}
 
-//		shape <- shape buffer (flood_front_speed #m / #mn * step) intersection world;
+		//		shape <- shape buffer (flood_front_speed #m / #mn * step) intersection world;
 	}
 
 	aspect default {
 		draw shape color: #blue;
 	}
-
-}
-
-/*
- * Represent the inhabitant of the area. They move at foot. They can pereive the hazard or be alerted
- * and then will try to reach the one randomly choose exit point
- */
-species inhabitant skills: [moving] {
-
-// The state of the agent
-	bool alerted <- false;
-	bool drowned <- false;
-	bool saved <- false;
-
-	// How far (#m) they can perceive
-	float perception_distance;
-
-	// The exit point they choose to reach
-	//	evacuation_point safety_point;
-	// How fast inhabitant can run
-	float speed <- 10 #km / #h;
-
-	/*
-	 * Am I drowning ?
-	 */
-
-
-	/*
-	 * Is there any danger around ?
-	 */
-
-
-	/*
-	 * When alerted people will try to go to the choosen exit point
-	 */
-
-/*
-	 * Am I safe ?
-	 */
-	
 
 }
 
@@ -227,14 +250,6 @@ species road {
 		users <- 0;
 	}
 
-	//	// Cut the road when flooded so people cannot use it anymore
-	//	reflex flood_road {
-	//		if(hazard first_with (each covers self) != nil){
-	//			road_network >- self; 
-	//			do die;
-	//		}
-	//	}
-	//	
 	aspect default {
 		draw shape width: 4 #m - (3 * speed_coeff) #m color: rgb(55 + 200 * users / capacity, 0, 0);
 	}
@@ -292,6 +307,200 @@ species supermarket {
 
 }
 
+species susceptible skills: [moving] {
+	float perception_distance;
+	float speed <- (2 + rnd(5)) #m;
+	int state <- 0;
+	float infect_range <- 2 #meter;
+	float save_time <- 0.0;
+	int count_I <- num_of_infectious;
+	int count_S <- num_of_susceptible;
+	bool is_infected <- flip(infected_rate);
+	bool is_infectedA <- flip(infected_rateA);
+	bool have_mask <- flip(mask_rate);
+	bool In_or_Ia <- flip(type_I);
+	bool N;
+	bool A;
+	int keeptimeE <- rnd(30, 100);
+	int keeptimeI <- rnd(100, 300);
+	bool alerted <- true;
+	home home_point;
+	industry industry_point;
+	office office_point;
+	park park_point;
+	school school_point;
+	supermarket supermarket_point;
+	int move_to <- rnd(1, 6);
+
+	reflex evacuate when: true {
+		switch move_to {
+			match 1 {
+				do goto target: home_point on: road_network move_weights: road_weights;
+			}
+
+			match 2 {
+				do goto target: industry_point on: road_network move_weights: road_weights;
+			}
+
+			match 3 {
+				do goto target: office_point on: road_network move_weights: road_weights;
+			}
+
+			match 4 {
+				do goto target: park_point on: road_network move_weights: road_weights;
+			}
+
+			match 5 {
+				do goto target: school_point on: road_network move_weights: road_weights;
+			}
+
+			match 6 {
+				do goto target: supermarket_point on: road_network move_weights: road_weights;
+			}
+
+		}
+
+		if (current_edge != nil) {
+			road the_current_road <- road(current_edge);
+			the_current_road.users <- the_current_road.users + 1;
+		}
+
+	}
+
+	reflex moving {
+		if (time != save_time) {
+			if (((time - save_time) mod keeptimeE = 0) and state = 1 and In_or_Ia) {
+				state <- 2;
+			} else if (((time - save_time) mod keeptimeE = 0) and state = 1 and !In_or_Ia) {
+				state <- 4;
+			} else if ((time - save_time) mod keeptimeI = 0 and (state = 2 or state = 4)) {
+				state <- 3;
+			} }
+
+			//		write sample(time);
+		//		do wander;
+	}
+
+	aspect base {
+		switch state {
+			match 0 {
+				draw pyramid(5) color: #white;
+				draw sphere(2) at: location + {0, 0, 5} color: #white;
+			}
+
+			match 1 {
+				draw circle(3) color: #yellow;
+			}
+
+			match 2 {
+				draw cross(10, 0.5) color: #red;
+				draw circle(3) at: location + {0, 0, 5} color: #red;
+			}
+
+			match 3 {
+				draw circle(3) color: #green;
+			}
+
+			match 4 {
+				draw circle(3) color: #red;
+			}
+
+		}
+
+	}
+
+	reflex attack when: !empty(susceptible at_distance infect_range) and (state = 2 or state = 4) {
+		ask susceptible at_distance infect_range {
+			if (self.have_mask) {
+				N <- flip(infected_rate * 0.5);
+				A <- flip(infected_rateA * 0.5);
+			}
+
+			if (state = 2) {
+				if (self.state = 0 and N) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
+			} else {
+				if (self.state = 0 and A) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
+			}
+
+		}
+
+	} }
+
+species infectious skills: [moving] {
+	float perception_distance;
+	float speed <- (2 + rnd(5)) #m;
+	int state <- 2;
+	float infect_range <- 2 #meter;
+	float save_time <- 0.0;
+	bool have_mask <- flip(mask_rate);
+	bool is_infected <- flip(infected_rate);
+	int keeptime <- rnd(100, 300);
+	home home_point;
+	industry industry_point;
+
+	reflex evacuate when: true {
+		do goto target: home_point on: road_network move_weights: road_weights;
+		if (current_edge != nil) {
+			road the_current_road <- road(current_edge);
+			the_current_road.users <- the_current_road.users + 1;
+		}
+
+	}
+
+	reflex moving {
+		if ((time - save_time) mod keeptime = 0 and time != 0 and (state = 2 or state = 4)) {
+		//			write sample(time);
+			state <- 3;
+		}
+
+	}
+
+	aspect base {
+		switch state {
+			match 2 {
+				draw cross(10, 0.5) color: #red;
+				draw circle(3) at: location + {0, 0, 5} color: #red;
+			}
+
+			match 3 {
+				draw circle(3) color: #green;
+			}
+
+		}
+		//		write sample(length(infectious));
+	}
+
+	reflex attack when: !empty(susceptible at_distance infect_range) and state = 2 {
+		ask susceptible at_distance infect_range {
+			if (have_mask) {
+				is_infected <- flip(infected_rate * 0.5);
+				if (self.state = 0 and is_infected) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
+			} else {
+				if (self.state = 0 and is_infected) {
+					self.state <- 1;
+					self.save_time <- time;
+				}
+
+			}
+
+		}
+
+	}
+
+}
+
 experiment "Run" {
 	float minimum_cycle_duration <- 0.1;
 	parameter "Alert Strategy" var: the_alert_strategy init: "STAGED" among: ["NONE", "STAGED", "SPATIAL", "EVERYONE"] category: "Alert";
@@ -311,7 +520,9 @@ experiment "Run" {
 			species park;
 			species school;
 			species supermarket;
-			species inhabitant;
+			//			species inhabitant;
+			species susceptible aspect: base;
+			species infectious aspect: base;
 		}
 
 		monitor "Number of casualties" value: casualties;
