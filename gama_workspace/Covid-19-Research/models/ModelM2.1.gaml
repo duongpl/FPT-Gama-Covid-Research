@@ -27,16 +27,15 @@ global {
 	// Parameters of hazard
 	int time_before_hazard;
 	float flood_front_speed;
-	shape_file shapefile_homes <- shape_file("includes/home/home.shp");
-	shape_file shapefile_industry <- shape_file("includes/industry/industry.shp");
-	shape_file shapefile_office <- shape_file("includes/office/office.shp");
-	shape_file shapefile_park <- shape_file("includes/park/park.shp");
-	shape_file shapefile_school <- shape_file("includes/school/school.shp");
-	shape_file shapefile_supermarket <- shape_file("includes/supermarket/supermarket.shp");
-	shape_file shapefile_roads <- shape_file("includes/clean_roads.shp");
-	shape_file shapefile_evacuations <- shape_file("includes/evacuation.shp");
-	shape_file shapefile_redriver <- shape_file("includes/RedRiver_scnr1.shp");
-	geometry shape <- envelope(envelope(shapefile_roads) + envelope(shapefile_redriver));
+	shape_file shapefile_buildings <- shape_file("includes_temp/buildings/buildings.shp");
+	shape_file shapefile_homes <- shape_file("includes_temp/home/home.shp");
+	shape_file shapefile_industry <- shape_file("includes_temp/industry/industry.shp");
+	shape_file shapefile_office <- shape_file("includes_temp/office/office.shp");
+	shape_file shapefile_park <- shape_file("includes_temp/park/park.shp");
+	shape_file shapefile_school <- shape_file("includes_temp/school/school.shp");
+	shape_file shapefile_supermarket <- shape_file("includes_temp/supermarket/supermarket.shp");
+	shape_file shapefile_roads <- shape_file("includes_temp/road/roads.shp");
+	geometry shape <- envelope(shapefile_roads);
 
 	// Graph road
 	graph<geometry, geometry> road_network;
@@ -54,7 +53,6 @@ global {
 		create park from: shapefile_park;
 		create school from: shapefile_school;
 		create supermarket from: shapefile_supermarket;
-		create hazard from: shapefile_redriver;
 		create susceptible number: num_of_susceptible {
 		//			home_point <- any(home);
 			int live_in <- rnd(1, 6);
@@ -259,6 +257,19 @@ species road {
 /*
  * People are located in building at the start of the simulation
  */
+species building {
+	int height;
+
+	aspect geom {
+		draw shape color: #grey border: #darkgrey;
+	}
+
+	aspect threeD {
+		draw shape color: #darkgrey depth: height texture: ["../include/roof_top.png", "../includes/textture5.jpg"];
+	}
+
+}
+
 species home {
 
 	aspect default {
