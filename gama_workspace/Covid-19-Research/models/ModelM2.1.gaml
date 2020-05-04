@@ -27,14 +27,14 @@ global {
 	// Parameters of hazard
 	int time_before_hazard;
 	float flood_front_speed;
-	shape_file shapefile_buildings <- shape_file("includes_temp/buildings/buildings.shp");
-	shape_file shapefile_homes <- shape_file("includes_temp/home/home.shp");
-	shape_file shapefile_industry <- shape_file("includes_temp/industry/industry.shp");
-	shape_file shapefile_office <- shape_file("includes_temp/office/office.shp");
-	shape_file shapefile_park <- shape_file("includes_temp/park/park.shp");
-	shape_file shapefile_school <- shape_file("includes_temp/school/school.shp");
-	shape_file shapefile_supermarket <- shape_file("includes_temp/supermarket/supermarket.shp");
-	shape_file shapefile_roads <- shape_file("includes_temp/road/roads.shp");
+	shape_file shapefile_buildings <- shape_file("../includes/buildings/buildings.shp");
+	shape_file shapefile_homes <- shape_file("../includes/home/home.shp");
+	shape_file shapefile_industry <- shape_file("../includes/industry/industry.shp");
+	shape_file shapefile_office <- shape_file("../includes/office/office.shp");
+	shape_file shapefile_park <- shape_file("../includes/park/park.shp");
+	shape_file shapefile_school <- shape_file("../includes/school/school.shp");
+	shape_file shapefile_supermarket <- shape_file("../includes/supermarket/supermarket.shp");
+	shape_file shapefile_roads <- shape_file("../includes/road/roads.shp");
 	geometry shape <- envelope(shapefile_roads);
 
 	// Graph road
