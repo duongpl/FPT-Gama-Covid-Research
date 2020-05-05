@@ -175,7 +175,7 @@ experiment myExp type: gui {
 		//explor 1.1
 		create simulation with: (seed::0);
 		create simulation with: (seed::1);
-//		create simulation with: (seed::2);
+		create simulation with: (seed::2);
 //		create simulation with: (seed::3);
 //		create simulation with: (seed::4);
 
