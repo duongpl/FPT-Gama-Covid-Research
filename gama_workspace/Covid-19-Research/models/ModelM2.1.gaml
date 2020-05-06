@@ -56,45 +56,46 @@ global {
 		create supermarket from: shapefile_supermarket;
 		create susceptible number: num_of_susceptible {
 			
-			int live_in <- rnd(1, 6);
+			int live_in <- 1;
 			switch live_in {
 				match 1 {
-					start_point <- any_location_in(one_of(home));
+					start_point <- one_of(home).location;
 					location <- start_point;
 				}
-
-				match 2 {
-					start_point <- any_location_in(one_of(industry));
-					location <- start_point;
-				}
-
-				match 3 {
-					start_point <- any_location_in(one_of(office));
-					location <- start_point;
-				}
-
-				match 4 {
-					start_point <- any_location_in(one_of(park));
-					location <- start_point;
-				}
-
-				match 5 {
-					start_point <- any_location_in(one_of(school));
-					location <- start_point;
-				}
-
-				match 6 {
-					start_point <- any_location_in(one_of(supermarket));
-					location <- start_point;
-				}
+//
+//				match 2 {
+//					start_point <- any_location_in(one_of(industry));
+//					location <- start_point;
+//				}
+//
+//				match 3 {
+//					start_point <- any_location_in(one_of(office));
+//					location <- start_point;
+//				}
+//
+//				match 4 {
+//					start_point <- any_location_in(one_of(park));
+//					location <- start_point;
+//				}
+//
+//				match 5 {
+//					start_point <- any_location_in(one_of(school));
+//					location <- start_point;
+//				}
+//
+//				match 6 {
+//					start_point <- any_location_in(one_of(supermarket));
+//					location <- start_point;
+//				}
 			}
 
-			home_point <- any(home);
-			industry_point <- any(industry);
-			office_point <- any(office);
-			park_point <- any(park);
-			school_point <- any(school);
-			supermarket_point <- any(supermarket);
+			home_point <- one_of(home);
+			industry_point <- one_of(industry);
+			office_point <- one_of(office);
+			park_point <- one_of(park);
+			school_point <- one_of(school);
+			supermarket_point <- one_of(supermarket);
+			
 			perception_distance <- rnd(min_perception_distance, max_perception_distance);
 		}
 		road_network <- as_edge_graph(road);
@@ -107,16 +108,19 @@ global {
 	reflex end_simulation when: susceptible count (each.state = 0) = 0{
 		do pause;
 	}
+	bool in_or_out <- true;
 	int hourr <- current_date.hour + 2;
 	reflex light_or_noon{
 		if(current_date.hour - hourr = 0){
 			if(is_light){
 				is_light <- false;
 				is_noon <- true;
+				in_or_out <- false;
 				hourr <- current_date.hour + 2;
 			}else{
 				is_light <- true;
 				is_noon <- false;
+				in_or_out <- true;
 				hourr <- current_date.hour + 2;
 			}
 		}
@@ -217,7 +221,7 @@ species home {
 	}
 	
 	reflex let_people_leave when: is_noon{
-		release people_in_home where flip(1) as: susceptible in: world 
+		release people_in_home where (each.end_point = location) as: susceptible in: world 
 		{
 			
 		}
@@ -228,7 +232,17 @@ species home {
 	{
 		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_home;
 	}
+
+
+	reflex let_people_leave_light when: is_light
+	{
+		release people_in_home where (each.start_point = location) as: susceptible in: world {}
+	}
 	
+	reflex let_people_enter_noon when: is_noon
+	{
+		capture (susceptible inside self) where (each.start_point = location) as: people_in_home;
+	}
 //	species people_in_home parent: susceptible schedules: [] { }
 //	
 //	aspect default {
@@ -270,7 +284,7 @@ species industry {
 	
 	reflex let_people_leave when: is_noon
 	{
-		release people_in_industry where flip(1) as: susceptible in: world 
+		release people_in_industry where (each.end_point = location) as: susceptible in: world 
 		{
 			
 		}
@@ -280,6 +294,17 @@ species industry {
 	reflex let_people_enter when: is_light
 	{
 		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_industry;
+	}
+	
+	
+	reflex let_people_leave_light when: is_light
+	{
+		release people_in_industry where (each.start_point = location) as: susceptible in: world {}
+	}
+	
+	reflex let_people_enter_noon when: is_noon
+	{
+		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_industry;
 	}
 //	species people_in_industry parent: susceptible schedules: [] { }
 //	aspect default {
@@ -313,7 +338,7 @@ species office {
 	
 	reflex let_people_leave when: is_noon
 	{
-		release people_in_office where flip(1) as: susceptible in: world 
+		release people_in_office where (each.end_point = location) as: susceptible in: world 
 		{
 			
 		}
@@ -323,6 +348,17 @@ species office {
 	reflex let_people_enter when: is_light
 	{
 		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_office;
+	}
+	
+	
+	reflex let_people_leave_light when: is_light
+	{
+		release people_in_office where (each.start_point = location) as: susceptible in: world {}
+	}
+	
+	reflex let_people_enter_noon when: is_noon
+	{
+		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_office;
 	}
 //	species people_in_office parent: susceptible schedules: [] { }
 //	
@@ -356,7 +392,7 @@ species park {
 	
 	reflex let_people_leave when: is_noon
 	{
-		release people_in_park where flip(1) as: susceptible in: world 
+		release people_in_park where (each.end_point = location) as: susceptible in: world 
 		{
 			
 		}
@@ -366,6 +402,17 @@ species park {
 	reflex let_people_enter when: is_light
 	{
 		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_park;
+	}
+	
+	
+	reflex let_people_leave_light when: is_light
+	{
+		release people_in_park where (each.start_point = location) as: susceptible in: world {}
+	}
+	
+	reflex let_people_enter_noon when: is_noon
+	{
+		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_park;
 	}
 //	species people_in_park parent: susceptible schedules: [] { }
 //	
@@ -399,17 +446,29 @@ species school {
 	
 	reflex let_people_leave when: is_noon
 	{
-		release people_in_school where flip(1) as: susceptible in: world 
+		release people_in_school where (each.end_point = location) as: susceptible in: world 
 		{
 			
 		}
-
 	}
 
 	reflex let_people_enter when: is_light
 	{
 		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_school;
 	}
+
+
+	reflex let_people_leave_light when: is_light
+	{
+		release people_in_school where (each.start_point = location) as: susceptible in: world {}
+	}
+	
+	reflex let_people_enter_noon when: is_noon
+	{
+		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_school;
+	}
+
+	
 //	species people_in_school parent: susceptible schedules: [] { }
 //	
 //	aspect default {
@@ -442,17 +501,45 @@ species supermarket {
 	
 	reflex let_people_leave when: is_noon
 	{
-		release people_in_supermarket where flip(1) as: susceptible in: world 
-		{
-			
-		}
-
+		release people_in_supermarket where (each.end_point = location) as: susceptible in: world {}
 	}
-
+	
 	reflex let_people_enter when: is_light
 	{
 		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_supermarket;
 	}
+	
+	
+	reflex let_people_leave_light when: is_light
+	{
+		release people_in_supermarket where (each.start_point = location) as: susceptible in: world {}
+	}
+	
+	reflex let_people_enter_noon when: is_noon
+	{
+		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_supermarket;
+	}
+	
+//	action a{
+//		if(in_or_out){
+//			if(is_noon){
+//				release people_in_supermarket where flip(1) as: susceptible in: world {}
+//				
+//			}else if(is_light){
+//				capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_supermarket;
+//			}
+//		}else{
+//			if(is_noon){
+//				capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_supermarket;
+//			}else if(is_light){
+//				release people_in_supermarket where flip(1) as: susceptible in: world {}
+//			}
+//		}
+//	}
+//	reflex test when: true{
+//		do a();
+//	}
+
 }
     
 
@@ -519,22 +606,9 @@ species susceptible skills: [moving] {
 				draw pyramid(8) color: #white;
 				draw sphere(4) at: location + {0, 0, 5} color: #white;
 			}
-
-			match 1 {
-				draw circle(3) color: #yellow;
-			}
-
 			match 2 {
 				draw cross(10, 0.5) color: #red;
 				draw circle(15) at: location + {0, 0, 5} color: #red;
-			}
-
-			match 3 {
-				draw circle(3) color: #green;
-			}
-
-			match 4 {
-				draw circle(3) color: #red;
 			}
 
 		}
