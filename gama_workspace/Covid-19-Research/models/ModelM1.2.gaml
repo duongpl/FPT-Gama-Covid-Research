@@ -17,8 +17,9 @@ global {
 	list<int> r0;
 //	geometry shape<-square(150 #m);
 	init {
-		create susceptible number: num_of_susceptible;
 		create infectious number: num_of_infectious;
+		create susceptible number: num_of_susceptible;
+		
 	}
 	reflex end_simulation when:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
     	do pause;
@@ -31,7 +32,6 @@ global {
 				loop s over: infectious where(each.state = 2 or each.state = 4){
 					add s.number_infected to: r0;
 				}
-				write sample(r0);
     }
 
 }
@@ -119,7 +119,11 @@ species susceptible skills: [moving] {
 
 		}
 
-	} }
+	}
+	reflex test{
+		write sample(2);
+	}
+}
 
 species infectious skills: [moving] {
 	float speed <- (2 + rnd(5)) #m;
@@ -130,7 +134,6 @@ species infectious skills: [moving] {
 	bool is_infected <- flip(infected_rate);
 	int keeptime <- rnd(100, 300);
 	int number_infected <- 0;
-
 	reflex moving {
 		if ((time - save_time) mod keeptime = 0 and time != 0 and (state = 2 or state = 4)) {
 		//			write sample(time);
@@ -150,9 +153,9 @@ species infectious skills: [moving] {
 			match 3 {
 				draw circle(1) color: #green;
 			}
-
 		}
 	}
+
 
 	reflex attack when: !empty(susceptible at_distance infect_range) and state = 2 {
 		ask susceptible at_distance infect_range {
@@ -176,7 +179,10 @@ species infectious skills: [moving] {
 		}
 
 	}
-
+	
+	reflex test{
+		write sample(1);
+	}
 }
 
 experiment myExp type: gui {
