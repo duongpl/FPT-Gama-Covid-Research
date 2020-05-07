@@ -1,4 +1,13 @@
-	model flood
+/***
+* Name: E21
+* Author: DUONG
+* Description: 
+* Tags: Tag1, Tag2, TagN
+***/
+
+model E21
+
+/* Insert your model definition here 	model flood
 
 /* Insert your model definition here */
 global {
@@ -36,7 +45,7 @@ global {
 	shape_file shapefile_school <- shape_file("../includes/school/school.shp");
 	shape_file shapefile_supermarket <- shape_file("../includes/supermarket/supermarket.shp");
 	shape_file shapefile_roads <- shape_file("../includes/road/roads.shp");
-	geometry shape <- envelope(envelope(shapefile_homes) + envelope(shapefile_industry)+ envelope(shapefile_office)+ envelope(shapefile_park)+ envelope(shapefile_school)+ envelope(shapefile_supermarket));
+	geometry shape <- envelope(shapefile_roads);
 
 	// Graph road
 	graph<geometry, geometry> road_network;
@@ -648,19 +657,25 @@ experiment "Run" {
 	float minimum_cycle_duration <- 0.1;
 	parameter "Number of people" var: num_of_susceptible min: 100 max: 20000 category: "Initialization";
 	output {
-		display my_display type: opengl {
-			species road;
-			species home;
-			species industry;
-			species office;
-			species park;
-			species school;
-			species supermarket;
-			species susceptible aspect: base;
+//		display my_display type: opengl {
+//			species road;
+//			species home;
+//			species industry;
+//			species office;
+//			species park;
+//			species school;
+//			species supermarket;
+//			species susceptible aspect: base;
+//		}
+		display chart refresh: every(100 #cycle){
+			chart "c" type: series {
+				data value: nb_infect legend: "Number of I" color:#red;
+			}
 		}
-
 		monitor "nb_infect" value: nb_infect;
 		monitor "day" value: nb_day;
 	}
 
 }
+
+
