@@ -9,7 +9,7 @@ global {
 	float infected_rate <- 1.0;
 	float infected_rateA <- 0.55;
 	// Time step to represent very short term movement (for congestion)
-	float step <- 10 #sec;
+	float step <- 2 #mn;
 	int nb_of_people;
 
 	// To initialize perception distance of inhabitant
@@ -43,8 +43,9 @@ global {
 
 	// Output the number of casualties
 	int casualties;
-	bool is_light <- true;
-	bool is_noon <- false;
+
+	int current_hour update: (time / #hour) mod 24;
+	int nb_day <- 0;
 	init {
 	//		create susceptible number: num_of_susceptible;
 		create road from: shapefile_roads;
@@ -56,39 +57,9 @@ global {
 		create supermarket from: shapefile_supermarket;
 		create susceptible number: num_of_susceptible {
 			
-			int live_in <- 1;
-			switch live_in {
-				match 1 {
-					start_point <- one_of(home).location;
-					location <- start_point;
-				}
-//
-//				match 2 {
-//					start_point <- any_location_in(one_of(industry));
-//					location <- start_point;
-//				}
-//
-//				match 3 {
-//					start_point <- any_location_in(one_of(office));
-//					location <- start_point;
-//				}
-//
-//				match 4 {
-//					start_point <- any_location_in(one_of(park));
-//					location <- start_point;
-//				}
-//
-//				match 5 {
-//					start_point <- any_location_in(one_of(school));
-//					location <- start_point;
-//				}
-//
-//				match 6 {
-//					start_point <- any_location_in(one_of(supermarket));
-//					location <- start_point;
-//				}
-			}
-
+			start_point <- one_of(home).location;
+			location <- start_point;
+			
 			home_point <- one_of(home);
 			industry_point <- one_of(industry);
 			office_point <- one_of(office);
@@ -104,29 +75,32 @@ global {
 		    state <- 2;
 		}
 	}
+	bool check <- false;
+	reflex cal_day{
+		if(current_hour mod 24 = 0 and !check){
+			nb_day <- nb_day + 1;
+			check <- true;
+		}if(current_hour = 1){
+			check <- false;
+		}
+	}
 	
 	reflex end_simulation when: susceptible count (each.state = 0) = 0{
 		do pause;
 	}
-	bool in_or_out <- true;
-	int hourr <- current_date.hour + 2;
+	bool is_light <- false;
+	bool is_noon <- false;
 	reflex light_or_noon{
-		if(current_date.hour - hourr = 0){
-			if(is_light){
-				is_light <- false;
-				is_noon <- true;
-				in_or_out <- false;
-				hourr <- current_date.hour + 2;
-			}else{
-				is_light <- true;
-				is_noon <- false;
-				in_or_out <- true;
-				hourr <- current_date.hour + 2;
-			}
+		if(current_hour > 6 and current_hour < 18){
+			is_light <- true;
+			is_noon <- false;
+		}else{
+			is_light <- false;
+			is_noon <- true;
 		}
-		write sample(is_light);
+		write sample(current_hour);
 	}
-	date starting_date <- date([2019, 3, 22, 1, 0, 0]);
+	date starting_date <- date([2019, 3, 22, 6, 0, 0]);
 
 //	reflex show_time {
 //		write sample(cycle);
@@ -519,26 +493,6 @@ species supermarket {
 	{
 		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_supermarket;
 	}
-	
-//	action a{
-//		if(in_or_out){
-//			if(is_noon){
-//				release people_in_supermarket where flip(1) as: susceptible in: world {}
-//				
-//			}else if(is_light){
-//				capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_supermarket;
-//			}
-//		}else{
-//			if(is_noon){
-//				capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_supermarket;
-//			}else if(is_light){
-//				release people_in_supermarket where flip(1) as: susceptible in: world {}
-//			}
-//		}
-//	}
-//	reflex test when: true{
-//		do a();
-//	}
 
 }
     
@@ -633,6 +587,7 @@ experiment "Run" {
 
 		monitor "nb_infect" value: susceptible count(each.state = 2) + people_in_home count (each.state = 2)+ people_in_industry count (each.state = 2)+ people_in_office count (each.state = 2)+ people_in_park count (each.state = 2)+ people_in_school count (each.state = 2)+ people_in_supermarket count (each.state = 2);
 		monitor "nb" value: susceptible count(each.state = 0)+ people_in_home count (each.state = 0)+ people_in_industry count (each.state = 0)+ people_in_office count (each.state = 0)+ people_in_park count (each.state = 0)+ people_in_school count (each.state = 0)+ people_in_supermarket count (each.state = 0);
+		monitor "day" value: nb_day;
 	}
 
 }
