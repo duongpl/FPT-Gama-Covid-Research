@@ -191,7 +191,7 @@ experiment myExp type: gui {
 			species infectious aspect: base;
 		}
 		
-		//evolution of the number of I (1.2)
+		//evolution of the number of I (1.2 and 1.1)
 //		display chart refresh: every(5 #cycle){
 //			chart "c" type: series {
 //				data value: (susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) legend: "Number of I" color:#red;
