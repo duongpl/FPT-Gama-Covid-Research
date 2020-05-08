@@ -63,7 +63,7 @@ global {
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
 				}
-				create adults number: 1{
+				create adults_male number: 1{
 					start_point <- any_location_in(one_of(i));
 					location <- start_point;
 					industry_point <- one_of(industry);
@@ -72,7 +72,7 @@ global {
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
 				}
-				create olds number: 1{
+				create adults_female number: 1{
 					start_point <- any_location_in(one_of(i));
 					location <- start_point;
 					industry_point <- one_of(industry);
@@ -81,7 +81,17 @@ global {
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
 				}
-
+				if(flip(0.5)){
+					create olds number: 1{
+						start_point <- any_location_in(one_of(i));
+						location <- start_point;
+						industry_point <- one_of(industry);
+						office_point <- one_of(office);
+						park_point <- one_of(park);
+						school_point <- one_of(school);
+						supermarket_point <- one_of(supermarket);
+					}
+				}
 		}
 
 		road_network <- as_edge_graph(road);
@@ -411,7 +421,7 @@ species childs skills: [moving]{
 		}
 	}
 }
-species adults skills: [moving]{
+species adults_male skills: [moving]{
 	point start_point;
 	point end_point <- nil;
 	industry industry_point;
@@ -420,12 +430,35 @@ species adults skills: [moving]{
 	school school_point;
 	supermarket supermarket_point;
 	int state <- 0;
-	
+	bool gender;
 	aspect base {
 		switch state {
 			match 0 {
 				draw pyramid(8) color: #green;
 				draw sphere(4) at: location + {0, 0, 5} color: #green;
+			}
+			match 2 {
+				draw cross(10, 0.5) color: #red;
+				draw circle(15) at: location + {0, 0, 5} color: #red;
+			}
+		}
+	}
+}
+species adults_female skills: [moving]{
+	point start_point;
+	point end_point <- nil;
+	industry industry_point;
+	office office_point;
+	park park_point;
+	school school_point;
+	supermarket supermarket_point;
+	int state <- 0;
+	bool gender;
+	aspect base {
+		switch state {
+			match 0 {
+				draw pyramid(8) color: #pink;
+				draw sphere(4) at: location + {0, 0, 5} color: #pink;
 			}
 			match 2 {
 				draw cross(10, 0.5) color: #red;
@@ -458,9 +491,6 @@ species olds skills: [moving]{
 	}
 }
 species susceptible skills: [moving] {
-	childs c;
-	adults a;
-	olds o;
 	
 	point start_point;
 	point end_point <- nil;
@@ -524,13 +554,13 @@ experiment "Run" {
 			species school;
 			species supermarket;
 			species childs aspect: base;
-			species adults aspect: base;
+			species adults_male aspect: base;
+			species adults_female aspect: base;
 			species olds aspect: base;
 		}
 
 		monitor "nb_infect" value: nb_infect;
 		monitor "day" value: nb_day;
-		monitor "sus" value: length(susceptible);
 	}
 
 }

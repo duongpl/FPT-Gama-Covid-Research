@@ -640,8 +640,8 @@ species susceptible skills: [moving] {
 	aspect base {
 		switch state {
 			match 0 {
-				draw pyramid(8) color: #white;
-				draw sphere(4) at: location + {0, 0, 5} color: #white;
+				draw pyramid(8) color: #black;
+				draw sphere(6) at: location + {0, 0, 5} color: #black;
 			}
 			match 2 {
 				draw cross(10, 0.5) color: #red;
