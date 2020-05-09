@@ -1,10 +1,11 @@
 /***
-* Name: NewModel
+* Name: ModelM24
 * Author: DUONG
 * Description: 
 * Tags: Tag1, Tag2, TagN
-***/	
-model ModelM23
+***/
+
+model ModelM24
 
 /* Insert your model definition here */
 global {
@@ -168,6 +169,7 @@ species road {
 species home {
 	int nb_total <- 0 update:length(self.people_in_home);
 	species people_in_home parent: susceptible schedules: [] { }
+	
 	
 	aspect default {
 		draw shape color: #red border: #black;
@@ -376,6 +378,7 @@ species supermarket {
 
 }
 
+
 species susceptible skills: [moving] {
 	point start_point;
 	point end_point <- nil;
@@ -420,7 +423,7 @@ species susceptible skills: [moving] {
 				}
 			}else if(type = 1){
 				if(work_or_play and current_hour = 7){
-					do goto target: end_point on: road_network ;
+					do goto target: end_point on: road_network;
 				}else if(work_or_play and current_hour = 17){
 					do goto target: start_point on: road_network ;
 				}else if(!work_or_play and current_hour = 8){
