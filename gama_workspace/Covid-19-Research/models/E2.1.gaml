@@ -656,6 +656,19 @@ species susceptible skills: [moving] {
 experiment "Run" {
 	float minimum_cycle_duration <- 0.1;
 	parameter "Number of people" var: num_of_susceptible min: 100 max: 20000 category: "Initialization";
+	init {
+		//explor 2.1
+		create simulation with: (seed::0);
+		create simulation with: (seed::1);
+//		create simulation with: (seed::2);
+//		create simulation with: (seed::3);
+//		create simulation with: (seed::4);
+//		create simulation with: (seed::5);
+//		create simulation with: (seed::6);
+//		create simulation with: (seed::7);
+//		create simulation with: (seed::8);
+//		create simulation with: (seed::9);
+	}
 	output {
 //		display my_display type: opengl {
 //			species road;
