@@ -1,10 +1,11 @@
 /***
-* Name: NewModel
+* Name: ModelE22E23
 * Author: DUONG
 * Description: 
 * Tags: Tag1, Tag2, TagN
-***/	
-model ModelM23
+***/
+
+model ModelE22E23
 
 /* Insert your model definition here */
 global {
@@ -63,6 +64,7 @@ global {
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
 					gender <- true;
+					age <- rnd(23,55);
 					state <- 0;
 					type <- 0;
 				}
@@ -75,6 +77,7 @@ global {
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
 					gender <- false;
+					age <- rnd(23,55);
 					state <- 1;
 					type <- 1;
 				}
@@ -86,6 +89,7 @@ global {
 					park_point <- one_of(park);
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
+					age <- rnd(1,22);
 					gender <- flip(0.5);
 					state <- 2;
 					type <- 2;
@@ -99,6 +103,7 @@ global {
 					school_point <- one_of(school);
 					supermarket_point <- one_of(supermarket);
 					gender <- flip(0.5);
+					age <- rnd(56,90);
 					state <- 3;
 					type <- 3;
 				}
@@ -484,6 +489,7 @@ species susceptible skills: [moving] {
 	bool industry_or_office <- flip(0.5);
 	bool work_or_play <- flip(0.4);
 	bool gender;
+	int age;
 	int type;
 	int staying <- 0;
 	
@@ -570,31 +576,40 @@ species susceptible skills: [moving] {
 		}
 	}
 }
-
 experiment "Run" {
 	float minimum_cycle_duration <- 0.1;
 	parameter "Number of people" var: num_of_susceptible min: 100 max: 20000 category: "Initialization";
 	output {
-		display my_display type: opengl {
-			species road;
-			species home;
-			species industry;
-			species office;
-			species park;
-			species school;
-			species supermarket;
-			species susceptible aspect: base;
-		}
-		
-//		display epidemic_spread_E23 {
-//			chart "c" type: series {
-//				data value: nb_infect  legend: "Number of infected people" color:#red;
-//			}
+//		display my_display type: opengl {
+//			species road;
+//			species home;
+//			species industry;
+//			species office;
+//			species park;
+//			species school;
+//			species supermarket;
+//			species susceptible aspect: base;
 //		}
 		
-		monitor "nb_infect" value: nb_infect;
-		monitor "day" value: nb_day;
-		monitor "nb_people" value: nb_of_people;
+		display epidemic_spread_E23 refresh: every(5 #cycle){
+			chart "epidemic spread" type: series {
+				data value: nb_infect  legend: "Number of infected people" color:#red;
+			}
+		}
+        display "E2.2-1" {
+        	chart "the population distribution in terms of age" type: histogram {
+        		datalist (distribution_of(susceptible collect each.age,20,1,90) at "legend") 
+            		value:(distribution_of(susceptible collect each.age,20,1,90) at "values");      
+        	}
+    	}
+        display "E2.2-2" {
+        	chart "the ratio male-female" type: pie {
+				datalist ["Male","Female"] value: [susceptible count (each.gender),susceptible count (!each.gender)] color: [#red,#blue];
+        	}
+		}
+//		monitor "nb_infect" value: nb_infect;
+//		monitor "day" value: nb_day;
+//		monitor "nb_people" value: nb_of_people;
 	}
 
 }
