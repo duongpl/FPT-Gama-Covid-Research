@@ -170,7 +170,7 @@ species home {
 	species people_in_home parent: susceptible schedules: [] { }
 	
 	aspect default {
-		draw shape color: #red border: #black;
+		draw shape color: #lightgreen border: #black;
 	}
 
 	reflex checking {
@@ -180,7 +180,7 @@ species home {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_home;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_home;
 	}
 	
 	reflex infect{
@@ -215,7 +215,7 @@ species industry {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_industry;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_industry;
 	}
 	
 	reflex infect{
@@ -251,7 +251,7 @@ species office {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_office;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_office;
 	}
 	
 	reflex infect{
@@ -287,7 +287,7 @@ species park {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_park;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_park;
 	}
 	
 	reflex infect{
@@ -321,7 +321,7 @@ species school {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_school;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_school;
 	}
 	
 	reflex infect{
@@ -356,7 +356,7 @@ species supermarket {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_supermarket;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_supermarket;
 	}
 	
 	reflex infect{
@@ -471,7 +471,7 @@ species susceptible skills: [moving] {
 			}
 			match 4 {
 				draw pyramid(8) color: #red;
-				draw circle(10) at: location + {0, 0, 5} color: #red;
+				draw circle(14) at: location + {0, 0, 5} color: #red;
 			}
 		}
 	}
