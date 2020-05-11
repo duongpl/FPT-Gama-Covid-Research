@@ -15,7 +15,7 @@ global {
 	float infected_rate <- 1.0;
 	float infected_rateA <- 0.55;
 	// Time step to represent very short term movement (for congestion)
-	float step <- 1 #mn;
+	float step <- 2 #mn;
 	int nb_of_people;
 	int nb_infect <- 0;
 	bool lockdown <- false;
@@ -125,7 +125,7 @@ global {
 	bool is_light <- false;
 	bool is_noon <- false;
 
-	reflex light_or_noon {
+	reflex light_or_noonn {
 		if (current_hour > 5 and current_hour < 17) {
 			is_light <- true;
 			is_noon <- false;
@@ -133,8 +133,8 @@ global {
 			is_light <- false;
 			is_noon <- true;
 		}
-		//		write sample(current_hour);
 	}
+
 
 	reflex splt {
 		if (current_hour = 7) {
@@ -199,7 +199,7 @@ species home {
 	}
 
 	aspect default {
-		draw shape color: #red border: #black;
+		draw shape color: #lightgreen border: #black;
 	}
 
 	reflex test1 {
@@ -221,7 +221,8 @@ species home {
 			release people_in_home where flip(1) as: susceptible in: world {
 			}
 
-		} }
+		}
+	}
 
 	action inf {
 		if (nb_total > 0 and (people_in_home count (each.state = 4) > 0)) {
@@ -232,37 +233,6 @@ species home {
 		}
 
 	}
-
-	//    reflex infect_in_buildings when: nb_total > 0 and people_in_home count (each.state = 2) > 0{
-	//		ask (people_in_home where (each.state = 0))
-	//		{
-	//			state <- 2;
-	//		}
-	//	}
-	//	
-	//	reflex let_people_leave when: is_noon{
-	//		release people_in_home where (each.end_point = location) as: susceptible in: world 
-	//		{
-	//			
-	//		}
-	//
-	//	}
-	//
-	//	reflex let_people_enter when: is_light
-	//	{
-	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_home;
-	//	}
-	//
-	//
-	//	reflex let_people_leave_light when: is_light
-	//	{
-	//		release people_in_home where (each.start_point = location) as: susceptible in: world {}
-	//	}
-	//	
-	//	reflex let_people_enter_noon when: is_noon
-	//	{
-	//		capture (susceptible inside self) where (each.start_point = location) as: people_in_home;
-	//	}
 
 }
 
@@ -306,38 +276,6 @@ species industry {
 
 	}
 
-	//    reflex infect_in_buildings when: nb_total > 0 and people_in_industry count (each.state = 2) > 0{
-	//		ask (people_in_industry where (each.state = 0))
-	//		{
-	//			state <- 2;
-	//		}
-	//	}
-	//	
-	//	reflex let_people_leave when: is_noon
-	//	{
-	//		release people_in_industry where (each.end_point = location) as: susceptible in: world 
-	//		{
-	//			
-	//		}
-	//
-	//	}
-	//
-	//	reflex let_people_enter when: is_light
-	//	{
-	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_industry;
-	//	}
-	//	
-	//	
-	//	reflex let_people_leave_light when: is_light
-	//	{
-	//		release people_in_industry where (each.start_point = location) as: susceptible in: world {}
-	//	}
-	//	
-	//	reflex let_people_enter_noon when: is_noon
-	//	{
-	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_industry;
-	//	}
-
 }
 
 species office {
@@ -380,38 +318,6 @@ species office {
 
 	}
 
-	//    reflex infect_in_buildings when: nb_total > 0 and people_in_office count (each.state = 2) > 0{
-	//		ask (people_in_office where (each.state = 0))
-	//		{
-	//			state <- 2;
-	//		}
-	//	}
-	//	
-	//	reflex let_people_leave when: is_noon
-	//	{
-	//		release people_in_office where (each.end_point = location) as: susceptible in: world 
-	//		{
-	//			
-	//		}
-	//
-	//	}
-	//
-	//	reflex let_people_enter when: is_light
-	//	{
-	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_office;
-	//	}
-	//	
-	//	
-	//	reflex let_people_leave_light when: is_light
-	//	{
-	//		release people_in_office where (each.start_point = location) as: susceptible in: world {}
-	//	}
-	//	
-	//	reflex let_people_enter_noon when: is_noon
-	//	{
-	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_office;
-	//	}
-
 }
 
 species park {
@@ -453,38 +359,6 @@ species park {
 		}
 
 	}
-
-	//    reflex infect_in_buildings when: nb_total > 0 and people_in_park count (each.state = 2) > 0 {
-	//		ask (people_in_park where (each.state = 0))
-	//		{
-	//			state <- 2;
-	//		}
-	//	}
-	//	
-	//	reflex let_people_leave when: is_noon
-	//	{
-	//		release people_in_park where (each.end_point = location) as: susceptible in: world 
-	//		{
-	//			
-	//		}
-	//
-	//	}
-	//
-	//	reflex let_people_enter when: is_light
-	//	{
-	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_park;
-	//	}
-	//	
-	//	
-	//	reflex let_people_leave_light when: is_light
-	//	{
-	//		release people_in_park where (each.start_point = location) as: susceptible in: world {}
-	//	}
-	//	
-	//	reflex let_people_enter_noon when: is_noon
-	//	{
-	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_park;
-	//	}
 }
 
 species school {
@@ -527,37 +401,6 @@ species school {
 
 	}
 
-	//    reflex infect_in_buildings when: nb_total > 0 and people_in_school count (each.state = 2) > 0{
-	//		ask (people_in_school where (each.state = 0))
-	//		{
-	//			state <- 2;
-	//		}
-	//	}
-	//	
-	//	reflex let_people_leave when: is_noon
-	//	{
-	//		release people_in_school where (each.end_point = location) as: susceptible in: world 
-	//		{
-	//			
-	//		}
-	//	}
-	//
-	//	reflex let_people_enter when: is_light
-	//	{
-	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_school;
-	//	}
-	//
-	//
-	//	reflex let_people_leave_light when: is_light
-	//	{
-	//		release people_in_school where (each.start_point = location) as: susceptible in: world {}
-	//	}
-	//	
-	//	reflex let_people_enter_noon when: is_noon
-	//	{
-	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_school;
-	//	}
-
 }
 
 species supermarket {
@@ -598,7 +441,8 @@ species supermarket {
 
 		}
 
-	} }
+	} 
+}
 
 species susceptible skills: [moving] {
 	point start_point;
@@ -640,7 +484,7 @@ species susceptible skills: [moving] {
 	}
 
 	reflex evacuate when: end_point != nil {
-		if (lockdown and (nb_infect / nb_of_people >= 0.5)) {
+		if (lockdown and (nb_infect / nb_of_people >= lockdown_rate)) {
 			do goto target: start_point on: road_network;
 		} else {
 			if (is_workhour) {
