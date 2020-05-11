@@ -19,10 +19,12 @@ global {
 	float step <- 1 #mn;
 	int nb_of_people;
 	int nb_infect <- 0;
-
+	float base_rate <- 0.001;
 	// Represents the capacity of a road indicated as: number of inhabitant per #m of road
 	float road_density;
-
+	
+	bool enviromentinfect <- true;
+	
 	// Parameters of hazard
 	int time_before_hazard;
 	float flood_front_speed;
@@ -128,14 +130,13 @@ global {
 	}
 
 	reflex light_or_noon{
-		write sample(current_hour);
+//		write sample(current_hour);
 	}
 	reflex splt{
 		if(nb_infect < susceptible count(each.state =4)){
 			nb_infect <- susceptible count(each.state =4);
 		}
 	}
-	date starting_date <- date([2019, 3, 22, 6, 0, 0]);
 }
 
 /*
@@ -168,21 +169,22 @@ species road {
 
 species home {
 	int nb_total <- 0 update:length(self.people_in_home);
+	int nb_infect update: self.people_in_home count (each.state = 4);
 	species people_in_home parent: susceptible schedules: [] { }
-	int nb_people_stay_infect update: self.people_in_home count (each.state = 4);
-	float rate_in_building <- 0.1 ;
+	float rate_in_building <- 0.0 min:0.0 max:1.0  ;
+	int max_people_in_day <- 0;
+	
 	aspect default {
 		draw shape color: #lightgreen border: #black;
 	}
-	reflex reset when: current_date.hour = 0{
-		nb_people_stay_infect <- 0;
-	}
-	reflex cal_rate_in_building when: current_date.hour = 23{
-		if(nb_people_stay_infect = 0){
+
+	reflex cal_rate_in_building when: current_hour = 23 and current_date.minute = 1{
+		if(max_people_in_day = 0){
 			rate_in_building <- rate_in_building / 2;
 		}else{
-			rate_in_building <- rate_in_building + nb_people_stay_infect*0.005;
+			rate_in_building <- rate_in_building + max_people_in_day*base_rate;
 		}
+		max_people_in_day <- 0;
 	}
 
 	reflex checking {
@@ -193,21 +195,25 @@ species home {
 	
 	reflex capture{
 		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_home;
+		if(nb_infect > max_people_in_day){
+			max_people_in_day <- nb_infect;
+		}
+		
 	}
 	
 	reflex infect{
 		if(nb_total > 0 and (people_in_home count (each.state = 4) > 0 )){
-			ask (people_in_home where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3))
+			ask (people_in_home where (each.state != 4))
 			{
 				state <- 4;
 			}
-		}else if(nb_total > 0){
-//			ask (people_in_home where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3) )
-//			{
-//				state <- flip(rate_in_building) ? 4 : state;
-//			}
+		}else if(rate_in_building > 0 and enviromentinfect){
+			ask (people_in_home where (each.state != 4))
+			{
+				int temp <- flip(rate_in_building) ? 4 : state;
+				state <- temp;
+			}
 		}
-		
 	}
 	
 	reflex release when: current_date.minute = 0{
@@ -220,10 +226,22 @@ species home {
 
 species industry {
 	int nb_total <- 0 update:length(self.people_in_industry);
+	int nb_infect update: self.people_in_industry count (each.state = 4);
 	species people_in_industry parent: susceptible schedules: [] { }
+	float rate_in_building <- 0.0 min:0.0 max:1.0  ;
+	int max_people_in_day <- 0;
 	
 	aspect default {
 		draw shape color: #gray border: #black;
+	}
+
+	reflex cal_rate_in_building when: current_hour = 23 and current_date.minute = 1{
+		if(max_people_in_day = 0){
+			rate_in_building <- rate_in_building / 2;
+		}else{
+			rate_in_building <- rate_in_building + max_people_in_day*base_rate;
+		}
+		max_people_in_day <- 0;
 	}
 
 	reflex checking {
@@ -234,13 +252,23 @@ species industry {
 	
 	reflex capture{
 		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_industry;
+		if(nb_infect > max_people_in_day){
+			max_people_in_day <- nb_infect;
+		}
+		
 	}
 	
 	reflex infect{
 		if(nb_total > 0 and (people_in_industry count (each.state = 4) > 0 )){
-			ask (people_in_industry where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3))
+			ask (people_in_industry where (each.state != 4))
 			{
 				state <- 4;
+			}
+		}else if(rate_in_building > 0 and enviromentinfect){
+			ask (people_in_industry where (each.state != 4))
+			{
+				int temp <- flip(rate_in_building) ? 4 : state;
+				state <- temp;
 			}
 		}
 	}
@@ -256,10 +284,22 @@ species industry {
 
 species office {
 	int nb_total <- 0 update:length(self.people_in_office);
+	int nb_infect update: self.people_in_office count (each.state = 4);
 	species people_in_office parent: susceptible schedules: [] { }
+	float rate_in_building <- 0.0 min:0.0 max:1.0  ;
+	int max_people_in_day <- 0;
 	
 	aspect default {
 		draw shape color: #blue border: #black;
+	}
+
+	reflex cal_rate_in_building when: current_hour = 23 and current_date.minute = 1{
+		if(max_people_in_day = 0){
+			rate_in_building <- rate_in_building / 2;
+		}else{
+			rate_in_building <- rate_in_building + max_people_in_day*base_rate;
+		}
+		max_people_in_day <- 0;
 	}
 
 	reflex checking {
@@ -270,13 +310,23 @@ species office {
 	
 	reflex capture{
 		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_office;
+		if(nb_infect > max_people_in_day){
+			max_people_in_day <- nb_infect;
+		}
+		
 	}
 	
 	reflex infect{
 		if(nb_total > 0 and (people_in_office count (each.state = 4) > 0 )){
-			ask (people_in_office where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3))
+			ask (people_in_office where (each.state != 4))
 			{
 				state <- 4;
+			}
+		}else if(rate_in_building > 0 and enviromentinfect){
+			ask (people_in_office where (each.state != 4))
+			{
+				int temp <- flip(rate_in_building) ? 4 : state;
+				state <- temp;
 			}
 		}
 	}
@@ -291,13 +341,24 @@ species office {
 
 species park {
 	int nb_total <- 0 update:length(self.people_in_park);
+	int nb_infect update: self.people_in_park count (each.state = 4);
 	species people_in_park parent: susceptible schedules: [] { }
+	float rate_in_building <- 0.0 min:0.0 max:1.0  ;
+	int max_people_in_day <- 0;
 	
 	aspect default {
 		draw shape color: #green border: #black;
 	}
 
-	
+	reflex cal_rate_in_building when: current_hour = 23 and current_date.minute = 1{
+		if(max_people_in_day = 0){
+			rate_in_building <- rate_in_building / 2;
+		}else{
+			rate_in_building <- rate_in_building + max_people_in_day*base_rate;
+		}
+		max_people_in_day <- 0;
+	}
+
 	reflex checking {
 		ask (susceptible inside self){
 			staying <- staying + 1;
@@ -306,13 +367,23 @@ species park {
 	
 	reflex capture{
 		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_park;
+		if(nb_infect > max_people_in_day){
+			max_people_in_day <- nb_infect;
+		}
+		
 	}
 	
 	reflex infect{
 		if(nb_total > 0 and (people_in_park count (each.state = 4) > 0 )){
-			ask (people_in_park where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3))
+			ask (people_in_park where (each.state != 4))
 			{
 				state <- 4;
+			}
+		}else if(rate_in_building > 0 and enviromentinfect){
+			ask (people_in_park where (each.state != 4))
+			{
+				int temp <- flip(rate_in_building) ? 4 : state;
+				state <- temp;
 			}
 		}
 	}
@@ -326,12 +397,24 @@ species park {
 
 species school {
 	int nb_total update:length(self.people_in_school);
+	int nb_infect update: self.people_in_school count (each.state = 4);
 	species people_in_school parent: susceptible schedules: [] { }
+	float rate_in_building <- 0.0 min:0.0 max:1.0  ;
+	int max_people_in_day <- 0;
 	
 	aspect default {
 		draw shape color: #yellow border: #black;
 	}
 	
+	reflex cal_rate_in_building when: current_hour = 23 and current_date.minute = 1{
+		if(max_people_in_day = 0){
+			rate_in_building <- rate_in_building / 2;
+		}else{
+			rate_in_building <- rate_in_building + max_people_in_day*base_rate;
+		}
+		max_people_in_day <- 0;
+	}
+
 	reflex checking {
 		ask (susceptible inside self){
 			staying <- staying + 1;
@@ -340,13 +423,23 @@ species school {
 	
 	reflex capture{
 		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_school;
+		if(nb_infect > max_people_in_day){
+			max_people_in_day <- nb_infect;
+		}
+		
 	}
 	
 	reflex infect{
 		if(nb_total > 0 and (people_in_school count (each.state = 4) > 0 )){
-			ask (people_in_school where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3))
+			ask (people_in_school where (each.state != 4))
 			{
 				state <- 4;
+			}
+		}else if(rate_in_building > 0 and enviromentinfect){
+			ask (people_in_school where (each.state != 4))
+			{
+				int temp <- flip(rate_in_building) ? 4 : state;
+				state <- temp;
 			}
 		}
 	}
@@ -361,12 +454,24 @@ species school {
 
 species supermarket {
 	int nb_total update:length(self.people_in_supermarket);
+	int nb_infect update: self.people_in_supermarket count (each.state = 4);
 	species people_in_supermarket parent: susceptible schedules: [] { }
+	float rate_in_building <- 0.0 min:0.0 max:1.0  ;
+	int max_people_in_day <- 0;
 	
 	aspect default {
 		draw shape color: #violet border: #black;
 	}
 	
+	reflex cal_rate_in_building when: current_hour = 23 and current_date.minute = 1{
+		if(max_people_in_day = 0){
+			rate_in_building <- rate_in_building / 2;
+		}else{
+			rate_in_building <- rate_in_building + max_people_in_day*base_rate;
+		}
+		max_people_in_day <- 0;
+	}
+
 	reflex checking {
 		ask (susceptible inside self){
 			staying <- staying + 1;
@@ -375,13 +480,23 @@ species supermarket {
 	
 	reflex capture{
 		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_supermarket;
+		if(nb_infect > max_people_in_day){
+			max_people_in_day <- nb_infect;
+		}
+		
 	}
 	
 	reflex infect{
 		if(nb_total > 0 and (people_in_supermarket count (each.state = 4) > 0 )){
-			ask (people_in_supermarket where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3))
+			ask (people_in_supermarket where (each.state != 4))
 			{
 				state <- 4;
+			}
+		}else if(rate_in_building > 0 and enviromentinfect){
+			ask (people_in_supermarket where (each.state != 4))
+			{
+				int temp <- flip(rate_in_building) ? 4 : state;
+				state <- temp;
 			}
 		}
 	}
@@ -451,7 +566,9 @@ species susceptible skills: [moving] {
 				if(current_hour = 7){
 					do goto target: end_point on: road_network ;
 				}else if(current_hour = 16){
-					do goto target: any_location_in(park_point) on: road_network ;
+					if(flip(0.7)){
+						do goto target: any_location_in(park_point) on: road_network ;
+					}
 				}else if(current_hour = 17){
 					do goto target: start_point on: road_network ;
 				}
@@ -499,6 +616,10 @@ species susceptible skills: [moving] {
 experiment "Run" {
 	float minimum_cycle_duration <- 0.1;
 	parameter "Number of people" var: num_of_susceptible min: 100 max: 20000 category: "Initialization";
+	//E2.4
+	init {
+		create simulation with: (enviromentinfect::false);
+	}
 	output {
 		display my_display type: opengl {
 			species road;
