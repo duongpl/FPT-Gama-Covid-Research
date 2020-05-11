@@ -127,14 +127,13 @@ global {
 	}
 
 	reflex light_or_noon{
-		write sample(current_hour);
+//		write sample(current_hour);
 	}
 	reflex splt{
 		if(nb_infect < susceptible count(each.state =4)){
 			nb_infect <- susceptible count(each.state =4);
 		}
 	}
-	date starting_date <- date([2019, 3, 22, 6, 0, 0]);
 }
 
 /*
@@ -432,7 +431,9 @@ species susceptible skills: [moving] {
 				if(current_hour = 7){
 					do goto target: end_point on: road_network ;
 				}else if(current_hour = 16){
-					do goto target: any_location_in(park_point) on: road_network ;
+					if(flip(0.7)){
+						do goto target: any_location_in(park_point) on: road_network ;
+					}
 				}else if(current_hour = 17){
 					do goto target: start_point on: road_network ;
 				}
