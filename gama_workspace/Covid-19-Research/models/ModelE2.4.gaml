@@ -5,7 +5,7 @@
 * Tags: Tag1, Tag2, TagN
 ***/
 
-model ModelM24
+model ModelE24
 
 /* Insert your model definition here */
 global {
@@ -618,25 +618,25 @@ experiment "Run" {
 	parameter "Number of people" var: num_of_susceptible min: 100 max: 20000 category: "Initialization";
 	//E2.4
 	init {
-		create simulation with: (enviromentinfect::false);
+		create simulation with: (seed::1,enviromentinfect::false);
 	}
 	output {
-		display my_display type: opengl {
-			species road;
-			species home;
-			species industry;
-			species office;
-			species park;
-			species school;
-			species supermarket;
-			species susceptible aspect: base;
-		}
-		
-//		display epidemic_spread_E23 {
-//			chart "c" type: series {
-//				data value: nb_infect  legend: "Number of infected people" color:#red;
-//			}
+//		display my_display type: opengl {
+//			species road;
+//			species home;
+//			species industry;
+//			species office;
+//			species park;
+//			species school;
+//			species supermarket;
+//			species susceptible aspect: base;
 //		}
+		
+		display epidemic_spread_E23  refresh: every (10 #cycle){
+			chart "c" type: series {
+				data value: nb_infect  legend: "Number of infected people" color:#red;
+			}
+		}
 		
 		monitor "nb_infect" value: nb_infect;
 		monitor "day" value: nb_day;

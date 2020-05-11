@@ -44,7 +44,6 @@ global {
 
 	// Output the number of casualties
 	int casualties;
-
 	int current_hour update: (time / #hour) mod 24;
 	int nb_day <- 0;
 	init {
@@ -86,9 +85,9 @@ global {
 		}
 	}
 	
-//	reflex end_simulation when: susceptible count (each.state = 0) = 0{
-//		do pause;
-//	}
+	reflex end_simulation when: num_of_susceptible = nb_infect{
+		do pause;
+	}
 	bool is_workhour <- false;
 	bool is_homehour <- false;
 	bool is_light <- false;
@@ -103,6 +102,7 @@ global {
 		}
 //		write sample(current_hour);
 	}
+	
 	reflex splt{
 		if(current_hour = 7){
 			is_workhour <- true;
@@ -115,7 +115,6 @@ global {
 			nb_infect <- susceptible count(each.state =2);
 		}
 	}
-	date starting_date <- date([2019, 3, 22, 6, 0, 0]);
 }
 
 /*
