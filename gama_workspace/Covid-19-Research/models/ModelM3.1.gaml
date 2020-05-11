@@ -1,0 +1,716 @@
+/***
+* Name: NewModel
+* Author: DUONG
+* Description: 
+* Tags: Tag1, Tag2, TagN
+***/
+model ModelM23
+
+/* Insert your model definition here */
+global {
+	int num_of_susceptible <- 700;
+	int num_of_infectious <- 1;
+	float mask_rate <- 0.8;
+	float type_I <- 0.7;
+	float infected_rate <- 1.0;
+	float infected_rateA <- 0.55;
+	// Time step to represent very short term movement (for congestion)
+	float step <- 1 #mn;
+	int nb_of_people;
+	int nb_infect <- 0;
+	bool lockdown <- false;
+	float lockdown_rate <- 0.5;
+
+	// Represents the capacity of a road indicated as: number of inhabitant per #m of road
+	float road_density;
+
+	// Parameters of hazard
+	int time_before_hazard;
+	float flood_front_speed;
+	shape_file shapefile_buildings <- shape_file("../includes/buildings/buildings.shp");
+	shape_file shapefile_homes <- shape_file("../includes/home/home.shp");
+	shape_file shapefile_industry <- shape_file("../includes/industry/industry.shp");
+	shape_file shapefile_office <- shape_file("../includes/office/office.shp");
+	shape_file shapefile_park <- shape_file("../includes/park/park.shp");
+	shape_file shapefile_school <- shape_file("../includes/school/school.shp");
+	shape_file shapefile_supermarket <- shape_file("../includes/supermarket/supermarket.shp");
+	shape_file shapefile_roads <- shape_file("../includes/road/roads.shp");
+	geometry
+	shape <- envelope(envelope(shapefile_homes) + envelope(shapefile_industry) + envelope(shapefile_office) + envelope(shapefile_park) + envelope(shapefile_school) + envelope(shapefile_supermarket));
+
+	// Graph road
+	graph<geometry, geometry> road_network;
+	map<road, float> road_weights;
+	int current_hour update: (time / #hour) mod 24;
+	int nb_day <- 0;
+
+	init {
+	//		create susceptible number: num_of_susceptible;
+		create road from: shapefile_roads;
+		create home from: shapefile_homes;
+		create industry from: shapefile_industry;
+		create office from: shapefile_office;
+		create park from: shapefile_park;
+		create school from: shapefile_school;
+		create supermarket from: shapefile_supermarket;
+		loop i over: home {
+			int nb_adults <- 2;
+			int nb_childs <- rnd(0, 3);
+			int nb_olds <- flip(0.5) ? 1 : 0;
+			create susceptible number: 1 {
+				start_point <- any_location_in(one_of(i));
+				location <- start_point;
+				industry_point <- one_of(industry);
+				office_point <- one_of(office);
+				park_point <- one_of(park);
+				school_point <- one_of(school);
+				supermarket_point <- one_of(supermarket);
+				gender <- true;
+				state <- 0;
+				type <- 0;
+			}
+
+			create susceptible number: 1 {
+				start_point <- any_location_in(one_of(i));
+				location <- start_point;
+				industry_point <- one_of(industry);
+				office_point <- one_of(office);
+				park_point <- one_of(park);
+				school_point <- one_of(school);
+				supermarket_point <- one_of(supermarket);
+				gender <- false;
+				state <- 1;
+				type <- 1;
+			}
+
+			create susceptible number: nb_childs {
+				start_point <- any_location_in(one_of(i));
+				location <- start_point;
+				industry_point <- one_of(industry);
+				office_point <- one_of(office);
+				park_point <- one_of(park);
+				school_point <- one_of(school);
+				supermarket_point <- one_of(supermarket);
+				gender <- flip(0.5);
+				state <- 2;
+				type <- 2;
+			}
+
+			create susceptible number: nb_olds {
+				start_point <- any_location_in(one_of(i));
+				location <- start_point;
+				industry_point <- one_of(industry);
+				office_point <- one_of(office);
+				park_point <- one_of(park);
+				school_point <- one_of(school);
+				supermarket_point <- one_of(supermarket);
+				gender <- flip(0.5);
+				state <- 3;
+				type <- 3;
+			}
+
+		}
+
+		road_network <- as_edge_graph(road);
+		//		road_weights <- road as_map (each::each.shape.perimeter);
+		ask num_of_infectious among susceptible {
+			state <- 4;
+		}
+
+		nb_of_people <- length(susceptible);
+	}
+
+	bool is_workhour <- false;
+	bool is_homehour <- false;
+	bool is_light <- false;
+	bool is_noon <- false;
+
+	reflex light_or_noon {
+		if (current_hour > 5 and current_hour < 17) {
+			is_light <- true;
+			is_noon <- false;
+		} else {
+			is_light <- false;
+			is_noon <- true;
+		}
+		//		write sample(current_hour);
+	}
+
+	reflex splt {
+		if (current_hour = 7) {
+			is_workhour <- true;
+			is_homehour <- false;
+		} else if (current_hour = 19) {
+			is_workhour <- false;
+			is_homehour <- true;
+		}
+
+		if (nb_infect < susceptible count (each.state = 4)) {
+			nb_infect <- susceptible count (each.state = 4);
+		}
+
+	}
+
+	bool check <- false;
+
+	reflex cal_day {
+		if (current_hour mod 24 = 0 and !check) {
+			nb_day <- nb_day + 1;
+			check <- true;
+		}
+
+		if (current_hour = 1) {
+			check <- false;
+		}
+
+	}
+
+	reflex end_simulation when: susceptible count (each.state = 4) = nb_of_people {
+		do pause;
+	}
+
+	reflex light_or_noon {
+		write sample(current_hour);
+	}
+
+
+}
+
+/*
+ * The roads inhabitant will use to evacuate. Roads compute the congestion of road segment
+ * accordin to the Underwood function.
+ */
+species road {
+
+// Number of user on the road section
+	int users;
+	float capacity <- 1 + shape.perimeter / 30;
+	float speed_coeff <- 1.0;
+
+	aspect default {
+		draw shape color: #black depth: 3.0;
+	}
+
+}
+
+species home {
+	int nb_total <- 0 update: length(self.people_in_home);
+	species people_in_home parent: susceptible schedules: [] {
+	}
+
+	aspect default {
+		draw shape color: #red border: #black;
+	}
+
+	reflex test1 {
+		do test();
+	}
+
+	action test {
+		if (is_light and !is_workhour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_home;
+			do inf();
+		} else if (is_light and is_workhour) {
+			release people_in_home where flip(1) as: susceptible in: world {
+			}
+
+		} else if (is_noon and !is_homehour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_home;
+			do inf();
+		} else if (is_noon and is_homehour) {
+			release people_in_home where flip(1) as: susceptible in: world {
+			}
+
+		} }
+
+	action inf {
+		if (nb_total > 0 and (people_in_home count (each.state = 4) > 0)) {
+			ask (people_in_home where (each.state != 4)) {
+				state <- 4;
+			}
+
+		}
+
+	}
+
+	//    reflex infect_in_buildings when: nb_total > 0 and people_in_home count (each.state = 2) > 0{
+	//		ask (people_in_home where (each.state = 0))
+	//		{
+	//			state <- 2;
+	//		}
+	//	}
+	//	
+	//	reflex let_people_leave when: is_noon{
+	//		release people_in_home where (each.end_point = location) as: susceptible in: world 
+	//		{
+	//			
+	//		}
+	//
+	//	}
+	//
+	//	reflex let_people_enter when: is_light
+	//	{
+	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_home;
+	//	}
+	//
+	//
+	//	reflex let_people_leave_light when: is_light
+	//	{
+	//		release people_in_home where (each.start_point = location) as: susceptible in: world {}
+	//	}
+	//	
+	//	reflex let_people_enter_noon when: is_noon
+	//	{
+	//		capture (susceptible inside self) where (each.start_point = location) as: people_in_home;
+	//	}
+
+}
+
+species industry {
+	int nb_total <- 0 update: length(self.people_in_industry);
+	species people_in_industry parent: susceptible schedules: [] {
+	}
+
+	aspect default {
+		draw shape color: #gray border: #black;
+	}
+
+	reflex test1 {
+		do test();
+	}
+
+	action test {
+		if (is_light and !is_workhour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_industry;
+			do inf();
+		} else if (is_light and is_workhour) {
+			release people_in_industry where flip(1) as: susceptible in: world {
+			}
+
+		} else if (is_noon and !is_homehour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_industry;
+			do inf();
+		} else if (is_noon and is_homehour) {
+			release people_in_industry where flip(1) as: susceptible in: world {
+			}
+
+		} }
+
+	action inf {
+		if (nb_total > 0 and (people_in_industry count (each.state = 4) > 0)) {
+			ask (people_in_industry where (each.state != 4)) {
+				state <- 4;
+			}
+
+		}
+
+	}
+
+	//    reflex infect_in_buildings when: nb_total > 0 and people_in_industry count (each.state = 2) > 0{
+	//		ask (people_in_industry where (each.state = 0))
+	//		{
+	//			state <- 2;
+	//		}
+	//	}
+	//	
+	//	reflex let_people_leave when: is_noon
+	//	{
+	//		release people_in_industry where (each.end_point = location) as: susceptible in: world 
+	//		{
+	//			
+	//		}
+	//
+	//	}
+	//
+	//	reflex let_people_enter when: is_light
+	//	{
+	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_industry;
+	//	}
+	//	
+	//	
+	//	reflex let_people_leave_light when: is_light
+	//	{
+	//		release people_in_industry where (each.start_point = location) as: susceptible in: world {}
+	//	}
+	//	
+	//	reflex let_people_enter_noon when: is_noon
+	//	{
+	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_industry;
+	//	}
+
+}
+
+species office {
+	int nb_total <- 0 update: length(self.people_in_office);
+	species people_in_office parent: susceptible schedules: [] {
+	}
+
+	aspect default {
+		draw shape color: #blue border: #black;
+	}
+
+	reflex test1 {
+		do test();
+	}
+
+	action test {
+		if (is_light and !is_workhour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_office;
+			do inf();
+		} else if (is_light and is_workhour) {
+			release people_in_office where flip(1) as: susceptible in: world {
+			}
+
+		} else if (is_noon and !is_homehour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_office;
+			do inf();
+		} else if (is_noon and is_homehour) {
+			release people_in_office where flip(1) as: susceptible in: world {
+			}
+
+		} }
+
+	action inf {
+		if (nb_total > 0 and (people_in_office count (each.state = 4) > 0)) {
+			ask (people_in_office where (each.state != 4)) {
+				state <- 4;
+			}
+
+		}
+
+	}
+
+	//    reflex infect_in_buildings when: nb_total > 0 and people_in_office count (each.state = 2) > 0{
+	//		ask (people_in_office where (each.state = 0))
+	//		{
+	//			state <- 2;
+	//		}
+	//	}
+	//	
+	//	reflex let_people_leave when: is_noon
+	//	{
+	//		release people_in_office where (each.end_point = location) as: susceptible in: world 
+	//		{
+	//			
+	//		}
+	//
+	//	}
+	//
+	//	reflex let_people_enter when: is_light
+	//	{
+	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_office;
+	//	}
+	//	
+	//	
+	//	reflex let_people_leave_light when: is_light
+	//	{
+	//		release people_in_office where (each.start_point = location) as: susceptible in: world {}
+	//	}
+	//	
+	//	reflex let_people_enter_noon when: is_noon
+	//	{
+	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_office;
+	//	}
+
+}
+
+species park {
+	int nb_total <- 0 update: length(self.people_in_park);
+	species people_in_park parent: susceptible schedules: [] {
+	}
+
+	aspect default {
+		draw shape color: #green border: #black;
+	}
+
+	reflex test1 {
+		do test();
+	}
+
+	action test {
+		if (is_light and !is_workhour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_park;
+			do inf();
+		} else if (is_light and is_workhour) {
+			release people_in_park where flip(1) as: susceptible in: world {
+			}
+
+		} else if (is_noon and !is_homehour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_park;
+			do inf();
+		} else if (is_noon and is_homehour) {
+			release people_in_park where flip(1) as: susceptible in: world {
+			}
+
+		} }
+
+	action inf {
+		if (nb_total > 0 and (people_in_park count (each.state = 4) > 0)) {
+			ask (people_in_park where (each.state != 4)) {
+				state <- 4;
+			}
+
+		}
+
+	}
+
+	//    reflex infect_in_buildings when: nb_total > 0 and people_in_park count (each.state = 2) > 0 {
+	//		ask (people_in_park where (each.state = 0))
+	//		{
+	//			state <- 2;
+	//		}
+	//	}
+	//	
+	//	reflex let_people_leave when: is_noon
+	//	{
+	//		release people_in_park where (each.end_point = location) as: susceptible in: world 
+	//		{
+	//			
+	//		}
+	//
+	//	}
+	//
+	//	reflex let_people_enter when: is_light
+	//	{
+	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_park;
+	//	}
+	//	
+	//	
+	//	reflex let_people_leave_light when: is_light
+	//	{
+	//		release people_in_park where (each.start_point = location) as: susceptible in: world {}
+	//	}
+	//	
+	//	reflex let_people_enter_noon when: is_noon
+	//	{
+	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_park;
+	//	}
+}
+
+species school {
+	int nb_total update: length(self.people_in_school);
+	species people_in_school parent: susceptible schedules: [] {
+	}
+
+	aspect default {
+		draw shape color: #yellow border: #black;
+	}
+
+	reflex test1 {
+		do test();
+	}
+
+	action test {
+		if (is_light and !is_workhour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_school;
+			do inf();
+		} else if (is_light and is_workhour) {
+			release people_in_school where flip(1) as: susceptible in: world {
+			}
+
+		} else if (is_noon and !is_homehour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_school;
+			do inf();
+		} else if (is_noon and is_homehour) {
+			release people_in_school where flip(1) as: susceptible in: world {
+			}
+
+		} }
+
+	action inf {
+		if (nb_total > 0 and (people_in_school count (each.state = 4) > 0)) {
+			ask (people_in_school where (each.state != 4)) {
+				state <- 4;
+			}
+
+		}
+
+	}
+
+	//    reflex infect_in_buildings when: nb_total > 0 and people_in_school count (each.state = 2) > 0{
+	//		ask (people_in_school where (each.state = 0))
+	//		{
+	//			state <- 2;
+	//		}
+	//	}
+	//	
+	//	reflex let_people_leave when: is_noon
+	//	{
+	//		release people_in_school where (each.end_point = location) as: susceptible in: world 
+	//		{
+	//			
+	//		}
+	//	}
+	//
+	//	reflex let_people_enter when: is_light
+	//	{
+	//		capture (susceptible inside self) where (each.end_point = location and each.end_point != nil) as: people_in_school;
+	//	}
+	//
+	//
+	//	reflex let_people_leave_light when: is_light
+	//	{
+	//		release people_in_school where (each.start_point = location) as: susceptible in: world {}
+	//	}
+	//	
+	//	reflex let_people_enter_noon when: is_noon
+	//	{
+	//		capture (susceptible inside self) where (each.start_point = location and each.end_point != nil) as: people_in_school;
+	//	}
+
+}
+
+species supermarket {
+	int nb_total update: length(self.people_in_supermarket);
+	species people_in_supermarket parent: susceptible schedules: [] {
+	}
+
+	aspect default {
+		draw shape color: #violet border: #black;
+	}
+
+	reflex test1 {
+		do test();
+	}
+
+	action test {
+		if (is_light and !is_workhour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_supermarket;
+			do inf();
+		} else if (is_light and is_workhour) {
+			release people_in_supermarket where flip(1) as: susceptible in: world {
+			}
+
+		} else if (is_noon and !is_homehour) {
+			capture (susceptible inside self) where (each.end_point != nil) as: people_in_supermarket;
+			do inf();
+		} else if (is_noon and is_homehour) {
+			release people_in_supermarket where flip(1) as: susceptible in: world {
+			}
+
+		} }
+
+	action inf {
+		if (nb_total > 0 and (people_in_supermarket count (each.state = 4) > 0)) {
+			ask (people_in_supermarket where (each.state != 4)) {
+				state <- 4;
+			}
+
+		}
+
+	} }
+
+species susceptible skills: [moving] {
+	point start_point;
+	point end_point <- nil;
+	float speed <- (2 + rnd(5)) #m;
+	int state;
+	industry industry_point;
+	office office_point;
+	park park_point;
+	school school_point;
+	supermarket supermarket_point;
+	bool kid_or_adult <- flip(0.5);
+	bool industry_or_office <- flip(0.5);
+	bool work_or_play <- flip(0.4);
+	bool gender;
+	int type;
+	int staying <- 0;
+
+	reflex chooosee when: end_point = nil {
+		switch type {
+			match 0 {
+				end_point <- industry_or_office ? any_location_in(industry_point) : any_location_in(office_point);
+			}
+
+			match 1 {
+				end_point <- work_or_play ? (industry_or_office ? any_location_in(industry_point) : any_location_in(office_point)) : any_location_in(supermarket_point);
+			}
+
+			match 2 {
+				end_point <- any_location_in(school_point);
+			}
+
+			match 3 {
+				end_point <- any_location_in(park_point);
+			}
+
+		}
+
+	}
+
+	reflex evacuate when: end_point != nil {
+		if (lockdown and (nb_infect / nb_of_people >= 0.5)) {
+			do goto target: start_point on: road_network;
+		} else {
+			if (is_workhour) {
+				do goto target: end_point on: road_network;
+			} else if (is_homehour) {
+				do goto target: start_point on: road_network;
+			}
+
+		}
+
+	}
+
+	aspect base {
+		switch state {
+			match 0 {
+				draw pyramid(8) color: #green;
+				draw sphere(6) at: location + {0, 0, 5} color: #green;
+			}
+
+			match 1 {
+				draw pyramid(8) color: #pink;
+				draw sphere(6) at: location + {0, 0, 5} color: #pink;
+			}
+
+			match 2 {
+				draw pyramid(8) color: #yellow;
+				draw sphere(6) at: location + {0, 0, 5} color: #yellow;
+			}
+
+			match 3 {
+				draw pyramid(8) color: #blue;
+				draw sphere(6) at: location + {0, 0, 5} color: #blue;
+			}
+
+			match 4 {
+				draw pyramid(8) color: #red;
+				draw circle(10) at: location + {0, 0, 5} color: #red;
+			}
+
+		}
+
+	}
+
+}
+
+experiment "Run" {
+	float minimum_cycle_duration <- 0.1;
+	parameter "Number of people" var: num_of_susceptible min: 100 max: 20000 category: "Initialization";
+	parameter "Lockdown" var: lockdown init: false;
+	parameter "Condition to lockdown" var: lockdown_rate min: 0.0 max: 1.0;
+	output {
+		display my_display type: opengl {
+			species road;
+			species home;
+			species industry;
+			species office;
+			species park;
+			species school;
+			species supermarket;
+			species susceptible aspect: base;
+		}
+
+		//		display epidemic_spread_E23 {
+		//			chart "c" type: series {
+		//				data value: nb_infect  legend: "Number of infected people" color:#red;
+		//			}
+		//		}
+		monitor "nb_infect" value: nb_infect;
+		monitor "day" value: nb_day;
+		monitor "nb_people" value: nb_of_people;
+	}
+
+}
