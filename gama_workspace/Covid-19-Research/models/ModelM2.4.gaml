@@ -39,7 +39,7 @@ global {
 	// Graph road
 	graph<geometry, geometry> road_network;
 	map<road, float> road_weights;
-
+	float infect_rate24 <- 0.8;
 	int current_hour update: (time / #hour) mod 24;
 	int nb_day <- 0;
 	init {
@@ -169,10 +169,20 @@ species road {
 species home {
 	int nb_total <- 0 update:length(self.people_in_home);
 	species people_in_home parent: susceptible schedules: [] { }
-	
-	
+	int nb_people_stay_infect update: self.people_in_home count (each.state = 4);
+	float rate_in_building <- 0.1 ;
 	aspect default {
-		draw shape color: #red border: #black;
+		draw shape color: #lightgreen border: #black;
+	}
+	reflex reset when: current_date.hour = 0{
+		nb_people_stay_infect <- 0;
+	}
+	reflex cal_rate_in_building when: current_date.hour = 23{
+		if(nb_people_stay_infect = 0){
+			rate_in_building <- rate_in_building / 2;
+		}else{
+			rate_in_building <- rate_in_building + nb_people_stay_infect*0.005;
+		}
 	}
 
 	reflex checking {
@@ -182,7 +192,7 @@ species home {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_home;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_home;
 	}
 	
 	reflex infect{
@@ -191,7 +201,13 @@ species home {
 			{
 				state <- 4;
 			}
+		}else if(nb_total > 0){
+//			ask (people_in_home where (each.state = 0 or each.state = 1 or each.state = 2 or each.state = 3) )
+//			{
+//				state <- flip(rate_in_building) ? 4 : state;
+//			}
 		}
+		
 	}
 	
 	reflex release when: current_date.minute = 0{
@@ -217,7 +233,7 @@ species industry {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_industry;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_industry;
 	}
 	
 	reflex infect{
@@ -253,7 +269,7 @@ species office {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_office;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_office;
 	}
 	
 	reflex infect{
@@ -289,7 +305,7 @@ species park {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_park;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_park;
 	}
 	
 	reflex infect{
@@ -323,7 +339,7 @@ species school {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_school;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_school;
 	}
 	
 	reflex infect{
@@ -358,7 +374,7 @@ species supermarket {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_supermarket;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_supermarket;
 	}
 	
 	reflex infect{
@@ -474,7 +490,7 @@ species susceptible skills: [moving] {
 			}
 			match 4 {
 				draw pyramid(8) color: #red;
-				draw circle(10) at: location + {0, 0, 5} color: #red;
+				draw circle(14) at: location + {0, 0, 5} color: #red;
 			}
 		}
 	}

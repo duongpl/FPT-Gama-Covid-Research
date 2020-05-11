@@ -175,7 +175,7 @@ species home {
 	species people_in_home parent: susceptible schedules: [] { }
 	
 	aspect default {
-		draw shape color: #red border: #black;
+		draw shape color: #lightgreen border: #black;
 	}
 
 	reflex checking {
@@ -185,7 +185,7 @@ species home {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_home;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_home;
 	}
 	
 	reflex infect{
@@ -220,7 +220,7 @@ species industry {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_industry;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_industry;
 	}
 	
 	reflex infect{
@@ -256,7 +256,7 @@ species office {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_office;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_office;
 	}
 	
 	reflex infect{
@@ -292,7 +292,7 @@ species park {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_park;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_park;
 	}
 	
 	reflex infect{
@@ -326,7 +326,7 @@ species school {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_school;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_school;
 	}
 	
 	reflex infect{
@@ -361,7 +361,7 @@ species supermarket {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 15 and each.end_point != nil) as: people_in_supermarket;
+		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_supermarket;
 	}
 	
 	reflex infect{
@@ -379,99 +379,6 @@ species supermarket {
 		}
 	}
 
-}
-  
-species childs skills: [moving]{
-	point start_point;
-	point end_point <- nil;
-	industry industry_point;
-	office office_point;
-	park park_point;
-	school school_point;
-	supermarket supermarket_point;
-	int state <- 0;
-	
-	aspect base {
-		switch state {
-			match 0 {
-				draw pyramid(8) color: #yellow;
-				draw sphere(4) at: location + {0, 0, 5} color: #yellow;
-			}
-			match 2 {
-				draw cross(10, 0.5) color: #red;
-				draw circle(15) at: location + {0, 0, 5} color: #red;
-			}
-		}
-	}
-}
-species adults_male skills: [moving]{
-	point start_point;
-	point end_point <- nil;
-	industry industry_point;
-	office office_point;
-	park park_point;
-	school school_point;
-	supermarket supermarket_point;
-	int state <- 0;
-	bool gender;
-	aspect base {
-		switch state {
-			match 0 {
-				draw pyramid(8) color: #green;
-				draw sphere(4) at: location + {0, 0, 5} color: #green;
-			}
-			match 2 {
-				draw cross(10, 0.5) color: #red;
-				draw circle(15) at: location + {0, 0, 5} color: #red;
-			}
-		}
-	}
-}
-species adults_female skills: [moving]{
-	point start_point;
-	point end_point <- nil;
-	industry industry_point;
-	office office_point;
-	park park_point;
-	school school_point;
-	supermarket supermarket_point;
-	int state <- 0;
-	bool gender;
-	aspect base {
-		switch state {
-			match 0 {
-				draw pyramid(8) color: #pink;
-				draw sphere(4) at: location + {0, 0, 5} color: #pink;
-			}
-			match 2 {
-				draw cross(10, 0.5) color: #red;
-				draw circle(15) at: location + {0, 0, 5} color: #red;
-			}
-		}
-	}
-}
-species olds skills: [moving]{
-	point start_point;
-	point end_point <- nil;
-	industry industry_point;
-	office office_point;
-	park park_point;
-	school school_point;
-	supermarket supermarket_point;
-	int state <- 0;
-	
-	aspect base {
-		switch state {
-			match 0 {
-				draw pyramid(8) color: #blue;
-				draw sphere(4) at: location + {0, 0, 5} color: #blue;
-			}
-			match 2 {
-				draw cross(10, 0.5) color: #red;
-				draw circle(15) at: location + {0, 0, 5} color: #red;
-			}
-		}
-	}
 }
 
 
@@ -571,7 +478,7 @@ species susceptible skills: [moving] {
 			}
 			match 4 {
 				draw pyramid(8) color: #red;
-				draw circle(10) at: location + {0, 0, 5} color: #red;
+				draw circle(14) at: location + {0, 0, 5} color: #red;
 			}
 		}
 	}

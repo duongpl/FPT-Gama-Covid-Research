@@ -166,7 +166,7 @@ species home {
 	species people_in_home parent: susceptible schedules: [] { }
 	
 	aspect default {
-		draw shape color: #red border: #black;
+		draw shape color: #lightgreen border: #black;
 	}
 
 	reflex test1 {
