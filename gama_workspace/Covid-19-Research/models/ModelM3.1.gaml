@@ -229,10 +229,12 @@ species home {
 					have_mask <- true;
 				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate*mask_rate) ? 4 : 0;
+				}else{
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
+				
 			}
 
 		}
@@ -276,10 +278,10 @@ species industry {
 					have_mask <- true;
 				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate*mask_rate) ? 4 : 0;
+				}else{
+					state <- flip(infected_rate) ? 4 : 0;
 				}
-
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -323,10 +325,10 @@ species office {
 					have_mask <- true;
 				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate*mask_rate) ? 4 : 0;
+				}else{
+					state <- flip(infected_rate) ? 4 : 0;
 				}
-
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -370,10 +372,10 @@ species park {
 					have_mask <- true;
 				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate*mask_rate) ? 4 : 0;
+				}else{
+					state <- flip(infected_rate) ? 4 : 0;
 				}
-
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -417,10 +419,10 @@ species school {
 					have_mask <- true;
 				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate*mask_rate) ? 4 : 0;
+				}else{
+					state <- flip(infected_rate) ? 4 : 0;
 				}
-
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
