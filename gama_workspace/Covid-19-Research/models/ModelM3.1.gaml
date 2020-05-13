@@ -21,7 +21,8 @@ global {
 	int nb_infect <- 0;
 	bool lockdown <- false;
 	float lockdown_rate <- 0.5;
-
+	bool close_school <- false;
+	float close_school_rate <- 0.3;
 	// Represents the capacity of a road indicated as: number of inhabitant per #m of road
 	float road_density;
 
@@ -225,14 +226,12 @@ species home {
 	action inf {
 		if (nb_total > 0 and (people_in_home count (each.state = 4) > 0)) {
 			ask (people_in_home where (each.state != 4)) {
-				if (nb_infect / nb_of_people >= mask_rate) {
-					have_mask <- true;
-				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+				} else {
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -272,14 +271,12 @@ species industry {
 	action inf {
 		if (nb_total > 0 and (people_in_industry count (each.state = 4) > 0)) {
 			ask (people_in_industry where (each.state != 4)) {
-				if (nb_infect / nb_of_people >= mask_rate) {
-					have_mask <- true;
-				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+				} else {
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -319,14 +316,12 @@ species office {
 	action inf {
 		if (nb_total > 0 and (people_in_office count (each.state = 4) > 0)) {
 			ask (people_in_office where (each.state != 4)) {
-				if (nb_infect / nb_of_people >= mask_rate) {
-					have_mask <- true;
-				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+				} else {
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -366,14 +361,12 @@ species park {
 	action inf {
 		if (nb_total > 0 and (people_in_park count (each.state = 4) > 0)) {
 			ask (people_in_park where (each.state != 4)) {
-				if (nb_infect / nb_of_people >= mask_rate) {
-					have_mask <- true;
-				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+				} else {
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -413,14 +406,12 @@ species school {
 	action inf {
 		if (nb_total > 0 and (people_in_school count (each.state = 4) > 0)) {
 			ask (people_in_school where (each.state != 4)) {
-				if (nb_infect / nb_of_people >= mask_rate) {
-					have_mask <- true;
-				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+				} else {
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -460,14 +451,12 @@ species supermarket {
 	action inf {
 		if (nb_total > 0 and (people_in_supermarket count (each.state = 4) > 0)) {
 			ask (people_in_supermarket where (each.state != 4)) {
-				if (nb_infect / nb_of_people >= mask_rate) {
-					have_mask <- true;
-				}
 				if (have_mask) {
-					infected_rate <- infected_rate * 0.5;
+					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+				} else {
+					state <- flip(infected_rate) ? 4 : 0;
 				}
 
-				state <- flip(infected_rate) ? 4 : 0;
 			}
 
 		}
@@ -517,10 +506,15 @@ species susceptible skills: [moving] {
 		if (lockdown and (nb_infect / nb_of_people >= lockdown_rate)) {
 			do goto target: start_point on: road_network;
 		} else {
-			if (is_workhour) {
-				do goto target: end_point on: road_network;
-			} else if (is_homehour) {
+			if ((nb_infect / nb_of_people >= close_school_rate) and type = 2) {
 				do goto target: start_point on: road_network;
+			} else {
+				if (is_workhour) {
+					do goto target: end_point on: road_network;
+				} else if (is_homehour) {
+					do goto target: start_point on: road_network;
+				}
+
 			}
 
 		}
@@ -566,8 +560,9 @@ experiment "Run" {
 	parameter "Infected rate" var: infected_rate min: 0.0 max: 1.0;
 	parameter "Condition to lockdown" var: lockdown_rate min: 0.0 max: 1.0;
 	parameter "Lockdown" var: lockdown init: false;
-	parameter "Condition to wear mask" var: mask_rate min: 0.0 max: 1.0;
+	//	parameter "Condition to wear mask" var: mask_rate min: 0.0 max: 1.0;
 	parameter "Wear mask" var: have_mask init: false;
+	parameter "Condition to close school" var: close_school_rate min: 0.0 max: 1.0;
 	output {
 		display my_display type: opengl {
 			species road;
