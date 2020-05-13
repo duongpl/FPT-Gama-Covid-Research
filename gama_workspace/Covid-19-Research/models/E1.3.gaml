@@ -24,20 +24,20 @@ global {
 		return cycle;
 	}
 	int calduration{
-		if((susceptible count (each.state = 2 or each.state = 4) + infectious count (each.state = 2)) = 0 and susceptible count(each.state = 1) = 0){
-			The_duration_of_the_epidemic <- The_duration_of_the_epidemic + 1;
+		if((susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) > 0){
+			The_duration_of_the_epidemic <- int(cycle / 24);
 		}
 		return The_duration_of_the_epidemic;
+		
 	}
-//	geometry shape<-square(150 #m);
 
 	init {
 		create susceptible number: num_of_susceptible;
 		create infectious number: num_of_infectious;
 	}
-//	reflex end_simulation when:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
-//    	do pause;
-//    }
+	reflex end_simulation when:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
+    	do pause;
+    }
 
 }
 
@@ -178,7 +178,7 @@ species infectious skills: [moving] {
 
 }
 
-experiment myExp type: batch keep_seed:false until:(susceptible count (each.state = 2 or each.state = 4 or each.state = 1) + infectious count (each.state = 2)) = 0 {
+experiment myExp type: gui {
     reflex t {
         save [the_cycle_of_the_maximum_number_of_infected_peoples,The_duration_of_the_epidemic] to: "result/e13.csv" type: "csv";
     }
