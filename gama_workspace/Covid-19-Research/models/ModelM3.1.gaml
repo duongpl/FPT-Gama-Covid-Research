@@ -25,7 +25,9 @@ global {
 	float close_school_rate <- 0.3;
 	// Represents the capacity of a road indicated as: number of inhabitant per #m of road
 	float road_density;
-
+	bool child_containment <- false;
+	bool adult_containment <- false;
+	bool elder_containment <- false;
 	// Parameters of hazard
 	int time_before_hazard;
 	float flood_front_speed;
@@ -529,8 +531,8 @@ species susceptible skills: [moving] {
 	int type;
 	int staying <- 0;
 	int save_time;
-	int keeptimeE <- 4;
-	int keeptimeI <- 4;
+	int keeptimeE <- rnd(3,7);
+	int keeptimeI <- rnd(10,15);
 
 	reflex moving {
 		if (nb_day != save_time) {
@@ -567,13 +569,56 @@ species susceptible skills: [moving] {
 
 	}
 
-	reflex evacuate when: end_point != nil {
+	reflex evacuate_child when: end_point != nil {
 		if (lockdown and (nb_infect / nb_of_people >= lockdown_rate)) {
 			do goto target: start_point on: road_network;
 		} else {
-			if ((nb_infect / nb_of_people >= close_school_rate) and type = 2) {
+			if (close_school and type = 2) {
 				do goto target: start_point on: road_network;
 			} else {
+				if (child_containment and type = 2) {
+					do goto target: start_point on: road_network;
+				} else if (type = 2) {
+					if (is_workhour) {
+						do goto target: end_point on: road_network;
+					} else if (is_homehour) {
+						do goto target: start_point on: road_network;
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	reflex evacuate_elder when: end_point != nil {
+		if (lockdown and (nb_infect / nb_of_people >= lockdown_rate)) {
+			do goto target: start_point on: road_network;
+		} else {
+			if (elder_containment and type = 3) {
+				do goto target: start_point on: road_network;
+			} else if (type = 3) {
+				if (is_workhour) {
+					do goto target: end_point on: road_network;
+				} else if (is_homehour) {
+					do goto target: start_point on: road_network;
+				}
+
+			}
+
+		}
+
+	}
+
+	reflex evacuate_adult when: end_point != nil {
+		if (lockdown and (nb_infect / nb_of_people >= lockdown_rate)) {
+			do goto target: start_point on: road_network;
+		} else {
+			if (adult_containment and (type = 0 or type = 1)) {
+				do goto target: start_point on: road_network;
+			} else if (type = 0 or type = 1) {
 				if (is_workhour) {
 					do goto target: end_point on: road_network;
 				} else if (is_homehour) {
@@ -664,7 +709,10 @@ experiment "Run" {
 	parameter "Lockdown" var: lockdown init: false;
 	//	parameter "Condition to wear mask" var: mask_rate min: 0.0 max: 1.0;
 	parameter "Wear mask" var: have_mask init: false;
-	parameter "Condition to close school" var: close_school_rate min: 0.0 max: 1.0;
+	//	parameter "Condition to close school" var: close_school_rate min: 0.0 max: 1.0;
+	parameter "Child" var: child_containment init: false category: "Containment by ages";
+	parameter "Adult" var: adult_containment init: false category: "Containment by ages";
+	parameter "Elder" var: elder_containment init: false category: "Containment by ages";
 	output {
 		display my_display type: opengl {
 			species road;
