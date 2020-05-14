@@ -13,10 +13,10 @@ global {
 	float mask_rate <- 0.5;
 	bool have_mask <- false;
 	float type_I <- 0.7;
-	float infected_rate <- 0.2;
+	float infected_rate <- 1.0;
 	float infected_rateA <- 0.55;
 	// Time step to represent very short term movement (for congestion)
-	float step <- 2 #mn;
+	float step <- 20 #mn;
 	int nb_of_people;
 	int nb_infect <- 0;
 	bool lockdown <- false;
@@ -81,7 +81,7 @@ global {
 				school_point <- one_of(school);
 				supermarket_point <- one_of(supermarket);
 				gender <- false;
-				state <- 1;
+				state <- 0;
 				type <- 1;
 			}
 
@@ -94,7 +94,7 @@ global {
 				school_point <- one_of(school);
 				supermarket_point <- one_of(supermarket);
 				gender <- flip(0.5);
-				state <- 2;
+				state <- 0;
 				type <- 2;
 			}
 
@@ -107,7 +107,7 @@ global {
 				school_point <- one_of(school);
 				supermarket_point <- one_of(supermarket);
 				gender <- flip(0.5);
-				state <- 3;
+				state <- 0;
 				type <- 3;
 			}
 
@@ -115,7 +115,8 @@ global {
 
 		road_network <- as_edge_graph(road);
 		ask num_of_infectious among susceptible {
-			state <- 4;
+			state <- 2;
+			save_time <- nb_day;
 		}
 
 		nb_of_people <- length(susceptible);
@@ -127,7 +128,7 @@ global {
 	bool is_noon <- false;
 
 	reflex light_or_noonn {
-		if (current_hour > 5 and current_hour < 17) {
+		if (current_hour > 4 and current_hour < 16) {
 			is_light <- true;
 			is_noon <- false;
 		} else {
@@ -146,8 +147,8 @@ global {
 			is_homehour <- true;
 		}
 
-		if (nb_infect < susceptible count (each.state = 4)) {
-			nb_infect <- susceptible count (each.state = 4);
+		if (nb_infect < susceptible count (each.state = 2)) {
+			nb_infect <- susceptible count (each.state = 2);
 		}
 
 	}
@@ -166,7 +167,7 @@ global {
 
 	}
 
-	reflex end_simulation when: susceptible count (each.state = 4) = nb_of_people {
+	reflex end_simulation when: susceptible count (each.state = 3) = nb_of_people {
 		do pause;
 	}
 
@@ -224,12 +225,20 @@ species home {
 		} }
 
 	action inf {
-		if (nb_total > 0 and (people_in_home count (each.state = 4) > 0)) {
-			ask (people_in_home where (each.state != 4)) {
+		if (nb_total > 0 and (people_in_home count (each.state = 2) > 0)) {
+			ask (people_in_home where (each.state != 2 and each.state != 3 and each.state != 1)) {
 				if (have_mask) {
-					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+					if (flip(infected_rate * mask_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				} else {
-					state <- flip(infected_rate) ? 4 : 0;
+					if (flip(infected_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				}
 
 			}
@@ -269,12 +278,20 @@ species industry {
 		} }
 
 	action inf {
-		if (nb_total > 0 and (people_in_industry count (each.state = 4) > 0)) {
-			ask (people_in_industry where (each.state != 4)) {
+		if (nb_total > 0 and (people_in_industry count (each.state = 2) > 0)) {
+			ask (people_in_industry where (each.state != 2 and each.state != 3 and each.state != 1)) {
 				if (have_mask) {
-					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+					if (flip(infected_rate * mask_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				} else {
-					state <- flip(infected_rate) ? 4 : 0;
+					if (flip(infected_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				}
 
 			}
@@ -314,12 +331,20 @@ species office {
 		} }
 
 	action inf {
-		if (nb_total > 0 and (people_in_office count (each.state = 4) > 0)) {
-			ask (people_in_office where (each.state != 4)) {
+		if (nb_total > 0 and (people_in_office count (each.state = 2) > 0)) {
+			ask (people_in_office where (each.state != 2 and each.state != 3 and each.state != 1)) {
 				if (have_mask) {
-					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+					if (flip(infected_rate * mask_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				} else {
-					state <- flip(infected_rate) ? 4 : 0;
+					if (flip(infected_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				}
 
 			}
@@ -359,12 +384,20 @@ species park {
 		} }
 
 	action inf {
-		if (nb_total > 0 and (people_in_park count (each.state = 4) > 0)) {
-			ask (people_in_park where (each.state != 4)) {
+		if (nb_total > 0 and (people_in_park count (each.state = 2) > 0)) {
+			ask (people_in_park where (each.state != 2 and each.state != 3 and each.state != 1)) {
 				if (have_mask) {
-					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+					if (flip(infected_rate * mask_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				} else {
-					state <- flip(infected_rate) ? 4 : 0;
+					if (flip(infected_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				}
 
 			}
@@ -404,12 +437,20 @@ species school {
 		} }
 
 	action inf {
-		if (nb_total > 0 and (people_in_school count (each.state = 4) > 0)) {
-			ask (people_in_school where (each.state != 4)) {
+		if (nb_total > 0 and (people_in_school count (each.state = 2) > 0)) {
+			ask (people_in_school where (each.state != 2 and each.state != 3 and each.state != 1)) {
 				if (have_mask) {
-					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+					if (flip(infected_rate * mask_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				} else {
-					state <- flip(infected_rate) ? 4 : 0;
+					if (flip(infected_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				}
 
 			}
@@ -449,12 +490,20 @@ species supermarket {
 		} }
 
 	action inf {
-		if (nb_total > 0 and (people_in_supermarket count (each.state = 4) > 0)) {
-			ask (people_in_supermarket where (each.state != 4)) {
+		if (nb_total > 0 and (people_in_supermarket count (each.state = 2) > 0)) {
+			ask (people_in_supermarket where (each.state != 2 and each.state != 3 and each.state != 1)) {
 				if (have_mask) {
-					state <- flip(infected_rate * mask_rate) ? 4 : 0;
+					if (flip(infected_rate * mask_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				} else {
-					state <- flip(infected_rate) ? 4 : 0;
+					if (flip(infected_rate)) {
+						state <- 1;
+						save_time <- nb_day;
+					}
+
 				}
 
 			}
@@ -479,6 +528,22 @@ species susceptible skills: [moving] {
 	bool gender;
 	int type;
 	int staying <- 0;
+	int save_time;
+	int keeptimeE <- 4;
+	int keeptimeI <- 4;
+
+	reflex moving {
+		if (nb_day != save_time) {
+			if (((nb_day - save_time) mod keeptimeE = 0) and state = 1) {
+				state <- 2;
+				save_time <- nb_day;
+			} else if (((nb_day - save_time) mod keeptimeI = 0) and state = 2) {
+				state <- 3;
+			}
+
+		}
+
+	}
 
 	reflex chooosee when: end_point = nil {
 		switch type {
@@ -524,28 +589,65 @@ species susceptible skills: [moving] {
 	aspect base {
 		switch state {
 			match 0 {
-				draw pyramid(8) color: #green;
-				draw sphere(6) at: location + {0, 0, 5} color: #green;
+				switch type {
+					match 0 {
+						draw pyramid(8) color: #green;
+						draw sphere(6) at: location + {0, 0, 5} color: #green;
+					}
+
+					match 1 {
+						draw pyramid(8) color: #pink;
+						draw sphere(6) at: location + {0, 0, 5} color: #pink;
+					}
+
+					match 2 {
+						draw pyramid(8) color: #yellow;
+						draw sphere(6) at: location + {0, 0, 5} color: #yellow;
+					}
+
+					match 3 {
+						draw pyramid(8) color: #blue;
+						draw sphere(6) at: location + {0, 0, 5} color: #blue;
+					}
+
+				}
+
 			}
 
 			match 1 {
-				draw pyramid(8) color: #pink;
-				draw sphere(6) at: location + {0, 0, 5} color: #pink;
+				draw pyramid(8) color: #black;
+				draw sphere(15) at: location + {0, 0, 5} color: #black;
 			}
 
 			match 2 {
-				draw pyramid(8) color: #yellow;
-				draw sphere(6) at: location + {0, 0, 5} color: #yellow;
+				draw pyramid(8) color: #red;
+				draw sphere(15) at: location + {0, 0, 5} color: #red;
 			}
 
 			match 3 {
-				draw pyramid(8) color: #blue;
-				draw sphere(6) at: location + {0, 0, 5} color: #blue;
-			}
+				switch type {
+					match 0 {
+						draw pyramid(8) color: #green;
+						draw sphere(6) at: location + {0, 0, 5} color: #green;
+					}
 
-			match 4 {
-				draw pyramid(8) color: #red;
-				draw circle(10) at: location + {0, 0, 5} color: #red;
+					match 1 {
+						draw pyramid(8) color: #pink;
+						draw sphere(6) at: location + {0, 0, 5} color: #pink;
+					}
+
+					match 2 {
+						draw pyramid(8) color: #yellow;
+						draw sphere(6) at: location + {0, 0, 5} color: #yellow;
+					}
+
+					match 3 {
+						draw pyramid(8) color: #blue;
+						draw sphere(6) at: location + {0, 0, 5} color: #blue;
+					}
+
+				}
+
 			}
 
 		}
@@ -575,14 +677,11 @@ experiment "Run" {
 			species susceptible aspect: base;
 		}
 
-		//		display epidemic_spread_E23 {
-		//			chart "c" type: series {
-		//				data value: nb_infect  legend: "Number of infected people" color:#red;
-		//			}
-		//		}
-		monitor "nb_infect" value: nb_infect;
+		monitor "nb_infect" value: susceptible count (each.state = 2);
 		monitor "day" value: nb_day;
 		monitor "nb_people" value: nb_of_people;
+		monitor "nb_of_E" value: susceptible count (each.state = 1);
+		monitor "nb_of_R" value: susceptible count (each.state = 3);
 	}
 
 }
