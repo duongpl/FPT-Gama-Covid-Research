@@ -15,7 +15,7 @@ global {
 	float infected_rate <- 1.0;
 	float infected_rateA <- 0.55;
 	// Time step to represent very short term movement (for congestion)
-	float step <- 1 #mn;
+	float step <- 2 #mn;
 	int nb_of_people;
 	int nb_infect <- 0;
 
@@ -126,14 +126,36 @@ global {
 		do pause;
 	}
 
-	reflex light_or_noon{
-//		write sample(current_hour);
-	}
 	reflex splt{
 		if(nb_infect < susceptible count(each.state =4)){
 			nb_infect <- susceptible count(each.state =4);
 		}
 	}
+	reflex working when:current_hour = 7 and current_date.minute = 2 {
+		write  ("============");
+		write  ("working time");
+		write  ("============");
+	}
+	reflex shopping when: current_hour = 9 and current_date.minute = 2{
+		write  ("============");
+		write ("shopping time for housewife");
+		write ("retired people goes to the park");
+		write  ("============");
+	}
+	reflex parktime when: current_hour = 16 and current_date.minute = 2{
+		write  ("============");
+		write ("kids goes to the park after studing");
+		write  ("============");
+	}
+	reflex endoftheday when:current_hour = 17 and current_date.minute = 2{
+		write  ("============");
+		write  ("end working day");
+		write  ("============");
+	}
+	reflex show_time when: current_date.minute = 0{
+		write sample(current_hour);
+	}
+
 }
 
 /*
@@ -179,7 +201,7 @@ species home {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_home;
+		capture (susceptible inside self) where (each.staying >= 20 and each.end_point != nil) as: people_in_home;
 	}
 	
 	reflex infect{
@@ -214,7 +236,7 @@ species industry {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_industry;
+		capture (susceptible inside self) where (each.staying >= 20 and each.end_point != nil) as: people_in_industry;
 	}
 	
 	reflex infect{
@@ -250,7 +272,7 @@ species office {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_office;
+		capture (susceptible inside self) where (each.staying >= 20 and each.end_point != nil) as: people_in_office;
 	}
 	
 	reflex infect{
@@ -286,7 +308,7 @@ species park {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_park;
+		capture (susceptible inside self) where (each.staying >= 20 and each.end_point != nil) as: people_in_park;
 	}
 	
 	reflex infect{
@@ -320,7 +342,7 @@ species school {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_school;
+		capture (susceptible inside self) where (each.staying >= 20 and each.end_point != nil) as: people_in_school;
 	}
 	
 	reflex infect{
@@ -355,7 +377,7 @@ species supermarket {
 	}
 	
 	reflex capture{
-		capture (susceptible inside self) where (each.staying >= 45 and each.end_point != nil) as: people_in_supermarket;
+		capture (susceptible inside self) where (each.staying >= 20 and each.end_point != nil) as: people_in_supermarket;
 	}
 	
 	reflex infect{
